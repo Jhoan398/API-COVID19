@@ -1,9 +1,6 @@
 ﻿using API_COVID19.BusinessLogic;
 using API_COVID19.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using System.Diagnostics.Metrics;
-using static API_COVID19.Models.APIResponse;
 
 namespace API_COVID19.Controllers
 {
@@ -11,11 +8,11 @@ namespace API_COVID19.Controllers
     [Route("UpdateData")]
     public class UpdateFileController : Controller
     {
-        private readonly CountryBusinessLogic _db;
+        private readonly UpdateFileBusinessLogic _db;
 
         public UpdateFileController(ApplicationDbContext AppDataContext) 
         {
-            _db = new CountryBusinessLogic(AppDataContext);
+            _db = new UpdateFileBusinessLogic(AppDataContext);
         }
 
         [HttpGet]

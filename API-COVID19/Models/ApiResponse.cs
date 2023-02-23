@@ -1,11 +1,9 @@
 ﻿namespace API_COVID19.Models
 {
-    public class APIResponse
+    public class ApiResponse
     {
-        public int Code { get; set; }
-        public string  Message { get; set; }
-        public int MyProperty { get; set; }
-
+        public string Code { get; set; }
+        public string Message { get; set; }
         public object? ResponseData { get; set; }
 
 

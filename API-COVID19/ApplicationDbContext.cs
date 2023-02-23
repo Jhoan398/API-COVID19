@@ -17,7 +17,7 @@ namespace API_COVID19
         }
 
         public DbSet<Country> Country { get; set; }
-        public DbSet<CountryDataCovid> CountryDataCovid { get; set; }
+        public DbSet<DataCovid> CountryDataCovid { get; set; }
         public DbSet<ProvinceState> ProvinceState { get; set; }
     }
 }
