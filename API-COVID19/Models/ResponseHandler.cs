@@ -15,7 +15,7 @@ namespace API_COVID19.Models
 
         }
 
-        public static ApiResponse GetAppResponse(ResponseType type, object? contract)      
+        public static ApiResponse GetAppResponse(ResponseType type, object? contract = null)      
         {
             ApiResponse response = new ApiResponse
             {

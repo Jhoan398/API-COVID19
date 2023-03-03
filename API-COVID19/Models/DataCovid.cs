@@ -7,6 +7,7 @@ namespace API_COVID19.Models
     public class DataCovid
     {
         [Key,Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public decimal Infected { get; set; }
         public decimal Deads { get; set; }

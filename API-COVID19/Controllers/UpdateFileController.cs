@@ -1,6 +1,8 @@
 ﻿using API_COVID19.BusinessLogic;
 using API_COVID19.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static API_COVID19.Models.ApiResponse;
 
 namespace API_COVID19.Controllers
 {
@@ -8,43 +10,65 @@ namespace API_COVID19.Controllers
     [Route("UpdateData")]
     public class UpdateFileController : Controller
     {
-        private readonly UpdateFileBusinessLogic _db;
+        private readonly UpdateFileBusinessLogic _UFContext;
 
         public UpdateFileController(ApplicationDbContext AppDataContext) 
         {
-            _db = new UpdateFileBusinessLogic(AppDataContext);
+            _UFContext = new UpdateFileBusinessLogic(AppDataContext);
         }
 
         [HttpGet]
         [Route("GetLastDailyReportFile")]
-        public async Task<IActionResult> GetLastDailyReportFile() 
+        public async Task<IActionResult> GetLastDailyReportFile(string dateReport)
         {
-            using(var client  = new HttpClient() )
+            try
             {
-                var urlFile = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/01-11-2023.csv";
+                //var dateReport = "01-0-2021";
+                var FileName = _UFContext.RepoDataCovidUrl + dateReport + _UFContext.TypeCsvExt;
+                var FileNameUSA = _UFContext.RepoUSADataCovidUrl + dateReport + _UFContext.TypeCsvExt;
 
-                using (var response = await client.GetAsync(urlFile) )
+                string[] ContentUSA = await _UFContext.GetStringCsvFile(FileNameUSA);
+                var DataUSA = _UFContext.GetListDataCovidUSA(ContentUSA, dateReport);
+
+                string[] Content = await _UFContext.GetStringCsvFile(FileName);
+                var DataCountries = _UFContext.GetListDataCovid(Content, dateReport);
+
+                if (!DataUSA.Any() || !DataCountries.Any())
+                    throw new Exception();
+
+
+                var DicDataCountries = new Dictionary<string, List<DataCovid>>
                 {
-                    response.EnsureSuccessStatusCode();
-                    var fileContent = await response.Content.ReadAsStringAsync();
+                    { "AllWorld", DataCountries },
+                    { "USA", DataUSA}
+                };
+               
 
+                foreach (var item in DicDataCountries)
+                {
+                   await _UFContext.SaveListDBData(item.Value);
                 }
 
-                return Ok("File downloaded succesfully");
+                return Ok();
             }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            
         }
 
         [HttpGet]
         [Route("GetDataCountries")]
-        public async Task<IActionResult> GetFile()
+        public async Task<IActionResult> LoadCountries()
         {
             try
             {
-                var ListCountries = await _db.GetCountriesFromCsvTable();
+                var ListCountries = await _UFContext.GetCountriesStructure();
                 if (ListCountries.Count == 0)
                     throw new Exception();
 
-                _db.SaveDBData(ListCountries);
+               // _db.SaveDBData(ListCountries);
                 return Ok();
             }
             catch (Exception)
