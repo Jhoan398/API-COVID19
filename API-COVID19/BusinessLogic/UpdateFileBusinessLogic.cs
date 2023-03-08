@@ -1,4 +1,5 @@
-﻿using API_COVID19.Models;
+﻿using API_COVID19.Controllers;
+using API_COVID19.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -39,111 +40,147 @@ namespace API_COVID19.BusinessLogic
 
         }
 
-        public async Task SaveListDBData(List<DataCovid> DataCovid)
-        {
+        //public async Task SaveListDBData(List<DataCovid> DataCovid)
+        //{
 
-            _dbContext.CountryDataCovid.AddRange(DataCovid);
-            _dbContext.SaveChanges();
-        }
+        //    _dbContext.CountryDataCovid.AddRange(DataCovid);
+        //    _dbContext.SaveChanges();
+        //}
 
-        public List<DataCovid> GetListDataCovidUSA(string[] Content, string date) 
-        {
-            var ListDataCovid = new List<DataCovid>();
-            var USACountry = _dbContext.Country.Include(t => t.ProvinceStates).Where(p => p.Id == 840).FirstOrDefault();
-            var DateReport = DateTime.Parse(date);
+        //public async void CreateReportCases(string date) 
+        //{
+        //    var ListCountries = _dbContext.Country.Include(t => t.ProvinceStates).ToList();
+        //    var ListCountryReports = new List<CountryCaseReport>();
+        //    var ListProvinceReports = new List<ProvinceStateCaseReport>();
+        //    var DateReport = DateTime.Parse(date).Date.ToUniversalTime();
 
-            foreach (var line in Content.Skip(1))
-            {
-                // Province_State	Country_Region	Last_Update	Lat	Long_	Confirmed	Deaths	Recovered	Active	FIPS	Incident_Rate	Total_Test_Results	People_Hospitalized	Case_Fatality_Ratio	UID	ISO3	Testing_Rate	Hospitalization_Rate
-                var values = line.Split(',');
+        //    foreach (var Country in ListCountries)
+        //    {
+        //        var Country_ProvinceStates = Country.ProvinceStates;
+        //        if (Country_ProvinceStates.Count > 0)
+        //        {
+        //            foreach (var ProvinceState in Country_ProvinceStates)
+        //            {
+        //                var ProvinceStateCase = new ProvinceStateCaseReport
+        //                {
+        //                    ProvinceStateId = ProvinceState.Id,
+        //                    DateReport = DateReport,
+        //                };
 
-                // Last Value is Empty
-                if (String.IsNullOrEmpty(values[0]))
-                    break;
+        //                ListProvinceReports.Add(ProvinceStateCase);
 
-                var Province_State = String.IsNullOrEmpty(values[0]) ? string.Empty : values[0];
-                var Confirmed = String.IsNullOrEmpty(values[5]) ? 0 : decimal.Parse(values[5]);
-                var Deaths = String.IsNullOrEmpty(values[6]) ? 0 : decimal.Parse(values[6]);
-                var TotalCasesProvinces = Deaths + Confirmed;
+        //            }
+        //        }
+
+        //        var CountryCase = new CountryCaseReport
+        //        {
+        //            CountryId = Country.Id,
+        //            DateReport = DateReport
+        //        };
+
+        //        ListCountryReports.Add(CountryCase);
+        //    }
+
+        //     _dbContext.CountryCaseReport.AddRange(ListCountryReports);
+        //     _dbContext.ProvinceStateCaseReport.AddRange(ListProvinceReports);
+        //     _dbContext.SaveChanges();
+        //}
+
+        //public List<ProvinceStateCaseReport> GetListDataCovidUSA(string[] Content, string date)
+        //{
+        //    var ListDataCovid = new List<ProvinceStateCaseReport>();
+        //    var USACountry = _dbContext.Country.Include(t => t.ProvinceStates).Where(p => p.Id == 840).FirstOrDefault();
+        //    var DateReport = DateTime.Parse(date);
+
+        //    foreach (var line in Content.Skip(1))
+        //    {
+        //        // Province_State	Country_Region	Last_Update	Lat	Long_	Confirmed	Deaths	Recovered	Active	FIPS	Incident_Rate	Total_Test_Results	People_Hospitalized	Case_Fatality_Ratio	UID	ISO3	Testing_Rate	Hospitalization_Rate
+        //        var values = line.Split(',');
+
+        //        // Last Value is Empty
+        //        if (String.IsNullOrEmpty(values[0]))
+        //            break;
+
+        //        var Province_State = String.IsNullOrEmpty(values[0]) ? string.Empty : values[0];
+        //        var Confirmed = String.IsNullOrEmpty(values[5]) ? 0 : decimal.Parse(values[5]);
+        //        var Deaths = String.IsNullOrEmpty(values[6]) ? 0 : decimal.Parse(values[6]);
 
 
-                var ProvinceState = USACountry.ProvinceStates.Where(t => t.ProvinceName == Province_State).FirstOrDefault();
-                if (ProvinceState != null)
-                {
-                    var Data = new DataCovid
-                    {
-                        CountryId = USACountry.Id,
-                        Deads = Deaths,
-                        Infected = Confirmed,
-                        DateReport = DateTime.SpecifyKind(DateReport, DateTimeKind.Utc),
-                        ProvinceStateId = ProvinceState.Id,
-                        Total_Cases = TotalCasesProvinces
-                    };
+        //        var ProvinceState = USACountry.ProvinceStates.Where(t => t.ProvinceName == Province_State).FirstOrDefault();
+        //        if (ProvinceState != null)
+        //        {
+        //            var Cases = new Cases
+        //            {
+        //                Confirmed = Confirmed,
+        //                Deaths = Deaths
 
-                    ListDataCovid.Add(Data);
-                }
+        //            };
 
 
-            }
+        //            ListDataCovid.Add(Cases);
+        //        }
 
-            return ListDataCovid;
 
-        }
+        //    }
 
-        public List<DataCovid> GetListDataCovid(string[] Content, string date) 
-        {
-            try
-            {
-                var ListDataCovid = new List<DataCovid>();
-                var ListCountries = _dbContext.Country.Include(t => t.ProvinceStates).ToList<Country>();
-                var DateReport = DateTime.Parse(date);
+        //    return ListDataCovid;
 
-                foreach (var line in Content.Skip(1))
-                {
-                    //FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key,Incident_Rate,Case_Fatality_Ratio
-                    var values = line.Split(',');
-                    var FIPS = string.IsNullOrEmpty(values[0]) ? 0 : int.Parse(values[0]);
+        //}
 
-                    var Confirmed = string.IsNullOrEmpty(values[7])? 0 : decimal.Parse(values[7]);
-                    var Deaths = string.IsNullOrEmpty(values[8]) ? 0 : decimal.Parse(values[8]);
-                    var Province_State = string.IsNullOrEmpty(values[2]) ? string.Empty : values[2];
-                    var Country_Region = values[3];
+        //public List<DataCovid> GetListDataCovid(string[] Content, string date) 
+        //{
+        //    try
+        //    {
+        //        var ListDataCovid = new List<DataCovid>();
+        //        var ListCountries = _dbContext.Country.Include(t => t.ProvinceStates).ToList<Country>();
+        //        var DateReport = DateTime.Parse(date);
 
-                    var Country = ListCountries.Where(t => t.Combined_Key == Country_Region).FirstOrDefault();
-                    if (Country != null) 
-                    {
-                        var ListProvinceStates = Country.ProvinceStates;
+        //        foreach (var line in Content.Skip(1))
+        //        {
+        //            //FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key,Incident_Rate,Case_Fatality_Ratio
+        //            var values = line.Split(',');
+        //            var FIPS = string.IsNullOrEmpty(values[0]) ? 0 : int.Parse(values[0]);
 
-                        if (FIPS != 0 && Country.Combined_Key == "US")
-                            break;
+        //            var Confirmed = string.IsNullOrEmpty(values[7])? 0 : decimal.Parse(values[7]);
+        //            var Deaths = string.IsNullOrEmpty(values[8]) ? 0 : decimal.Parse(values[8]);
+        //            var Province_State = string.IsNullOrEmpty(values[2]) ? string.Empty : values[2];
+        //            var Country_Region = string.IsNullOrEmpty(values[3]) ? string.Empty : values[3];
 
-                        var ProvinceState = new ProvinceState();
-                        ProvinceState = ListProvinceStates.Where(t => t.ProvinceName == Province_State).FirstOrDefault();
+        //            var Country = ListCountries.Where(t => t.Combined_Key == Country_Region).FirstOrDefault();
+        //            if (Country != null) 
+        //            {
+        //                if (FIPS != 0 && Country.Combined_Key == "US")
+        //                    break;
 
-                        var Data = new DataCovid
-                        {
-                            CountryId = Country.Id,
-                            Deads = Deaths,
-                            Infected = Confirmed,
-                            DateReport = DateTime.SpecifyKind(DateReport, DateTimeKind.Utc),
-                            ProvinceStateId = ProvinceState == null ? 0 : ProvinceState.Id,
-                            Total_Cases = Deaths + Confirmed
-                        };
+        //                var ListProvinceStates = Country.ProvinceStates;
 
-                        ListDataCovid.Add(Data);
-                    }
-                    
-                }
+        //                var ProvinceState = new ProvinceState();
+        //                ProvinceState = ListProvinceStates.Where(t => t.ProvinceName == Province_State).FirstOrDefault();
 
-                return ListDataCovid;
-            }
-            catch (Exception e)
-            {
+        //                var Data = new DataCovid
+        //                {
+        //                    CountryId = Country.Id,
+        //                    Deads = Deaths,
+        //                    Infected = Confirmed,
+        //                    DateReport = DateTime.SpecifyKind(DateReport, DateTimeKind.Utc),
+        //                    ProvinceStateId = ProvinceState == null ? 0 : ProvinceState.Id,
+        //                    Total_Cases = Deaths + Confirmed
+        //                };
 
-                throw e;
-            }
-           
-        }
+        //                ListDataCovid.Add(Data);
+        //            }
+
+        //        }
+
+        //        return ListDataCovid;
+        //    }
+        //    catch (Exception e)
+        //    {
+
+        //        throw e;
+        //    }
+
+        //}
 
 
         public async Task<List<Country>> GetCountriesStructure()
