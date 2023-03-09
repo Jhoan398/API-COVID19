@@ -18,36 +18,36 @@ namespace API_COVID19.Controllers
         }
 
         [HttpGet]
-        [Route("GetLastDailyReportFile")]
-        public async Task<IActionResult> GetLastDailyReportFile(string dateReport)
+        [Route("GetDateReportCases")]
+        public async Task<IActionResult> GetDateReportCases(string dateReport)
         {
             try
             {
-                //_UFContext.CreateReportCases(dateReport);
-                //var FileName = _UFContext.RepoDataCovidUrl + dateReport + _UFContext.TypeCsvExt;
-                //var FileNameUSA = _UFContext.RepoUSADataCovidUrl + dateReport + _UFContext.TypeCsvExt;
+                var FileName = _UFContext.RepoDataCovidUrl + dateReport + _UFContext.TypeCsvExt;
+                var FileNameUSA = _UFContext.RepoUSADataCovidUrl + dateReport + _UFContext.TypeCsvExt;
 
-                //string[] ContentUSA = await _UFContext.GetStringCsvFile(FileNameUSA);
-                //var DataUSA = _UFContext.GetListDataCovidUSA(ContentUSA, dateReport);
+                string[] ContentUSA = await _UFContext.GetStringCsvFile(FileNameUSA);
+                var USACases = _UFContext.GetListCasesCovidUSA(ContentUSA, dateReport);
 
-                //string[] Content = await _UFContext.GetStringCsvFile(FileName);
-                //var DataCountries = _UFContext.GetListDataCovid(Content, dateReport);
+                string[] Content = await _UFContext.GetStringCsvFile(FileName);
+                var WorldCases = _UFContext.GetListDataCovid(Content, dateReport);
 
-                //if (!DataUSA.Any() || !DataCountries.Any())
-                //    throw new Exception();
+                
+                if (!USACases.Any() || !WorldCases.Any())
+                    throw new Exception();
 
 
-                //var DicDataCountries = new Dictionary<string, List<DataCovid>>
-                //{
-                //    { "AllWorld", DataCountries },
-                //    { "USA", DataUSA}
-                //};
-               
+                var dicCases = new Dictionary<string, List<Cases>>
+                {
+                    { "AllWorld", WorldCases },
+                    { "USA", USACases}
+                };
 
-                //foreach (var item in DicDataCountries)
-                //{
-                //   await _UFContext.SaveListDBData(item.Value);
-                //}
+
+                foreach (var Cases in dicCases)
+                {
+                    await _UFContext.SaveCasesToDB(Cases.Value);
+                }
 
                 return Ok();
             }
@@ -56,6 +56,24 @@ namespace API_COVID19.Controllers
                 return BadRequest();
             }
             
+        }
+
+        [HttpGet]
+        [Route("GetDateReportVaccinateds")]
+        public async Task<IActionResult> GetDateReportVaccinateds()
+        {
+            try
+            {
+
+
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return BadRequest();
+            }
         }
 
         [HttpGet]

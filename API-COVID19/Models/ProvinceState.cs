@@ -6,7 +6,7 @@ namespace API_COVID19.Models
     [Table("Province_state")]
     public class ProvinceState
     {
-        [Key, Required]
+        [Key]
         public int Id { get; set; }
         public string ProvinceName { get; set; } = String.Empty;
         public int CountryId { get; set; }
