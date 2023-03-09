@@ -19,7 +19,6 @@ namespace API_COVID19.Models
 
         [ForeignKey("CountryId")]
         public virtual Country CountryCaseReport { get; set; }
-        public int? ProvinceStateCaseId { get; set; }
 
         [ForeignKey("ProvinceStateId")]
         public virtual ProvinceState ProvinceState { get; set; }
