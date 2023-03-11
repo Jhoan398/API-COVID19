@@ -2,18 +2,15 @@
 using API_COVID19.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 
 namespace API_COVID19.BusinessLogic
 {
     public class UpdateFileBusinessLogic
     {
         private ApplicationDbContext _dbContext;
-
-        public readonly string TypeCsvExt = ".csv";
-        public readonly string RepoDataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/";
-        public readonly string RepoUSADataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/";
-        public readonly string RepoCountryStructureUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table";
 
         private HttpClient _HttpClient =  new HttpClient();
 
@@ -56,46 +53,37 @@ namespace API_COVID19.BusinessLogic
             
         }
 
-        //public async void CreateReportCases(string date) 
-        //{
-        //    var ListCountries = _dbContext.Country.Include(t => t.ProvinceStates).ToList();
-        //    var ListCountryReports = new List<CountryCaseReport>();
-        //    var ListProvinceReports = new List<ProvinceStateCaseReport>();
-        //    var DateReport = DateTime.Parse(date).Date.ToUniversalTime();
+        public async Task<Dictionary<string, List<Cases>>>  GetWorldWideCases(string dateReport) 
+        {
+            var TypeCsvExt = ".csv";
+            var RepoDataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/";
+            var RepoUSADataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/";
+            var FileName = RepoDataCovidUrl + dateReport + TypeCsvExt;
+            var FileNameUSA = RepoUSADataCovidUrl + dateReport + TypeCsvExt;
 
-        //    foreach (var Country in ListCountries)
-        //    {
-        //        var Country_ProvinceStates = Country.ProvinceStates;
-        //        if (Country_ProvinceStates.Count > 0)
-        //        {
-        //            foreach (var ProvinceState in Country_ProvinceStates)
-        //            {
-        //                var ProvinceStateCase = new ProvinceStateCaseReport
-        //                {
-        //                    ProvinceStateId = ProvinceState.Id,
-        //                    DateReport = DateReport,
-        //                };
 
-        //                ListProvinceReports.Add(ProvinceStateCase);
+            string[] ContentUSA = await GetStringCsvFile(FileNameUSA);
+            var USACases = GetListCasesCovidUSA(ContentUSA, dateReport);
 
-        //            }
-        //        }
+            string[] Content = await GetStringCsvFile(FileName);
+            var WorldCases = GetListWorldCasesCovid(Content, dateReport);
 
-        //        var CountryCase = new CountryCaseReport
-        //        {
-        //            CountryId = Country.Id,
-        //            DateReport = DateReport
-        //        };
+            //if (!WorldCases.Any() || !USACases.Any())
 
-        //        ListCountryReports.Add(CountryCase);
-        //    }
+            var dicCases = new Dictionary<string, List<Cases>>
+            {
+                { "WORLD", WorldCases },
+                { "USA", USACases}
+            };
 
-        //     _dbContext.CountryCaseReport.AddRange(ListCountryReports);
-        //     _dbContext.ProvinceStateCaseReport.AddRange(ListProvinceReports);
-        //     _dbContext.SaveChanges();
-        //}
 
-        public List<Cases> GetListCasesCovidUSA(string[] Content, string date)
+            return dicCases;
+        }
+
+
+
+        //Permite el mapeo de los datos para los casos de estados unidos
+        private List<Cases> GetListCasesCovidUSA(string[] Content, string date)
         {
             var ListCasesCovid = new List<Cases>();
             var USACountry = _dbContext.Country.Include(t => t.ProvinceStates).Where(p => p.Id == 840).FirstOrDefault();
@@ -141,7 +129,60 @@ namespace API_COVID19.BusinessLogic
 
         }
 
-        public List<Cases> GetListDataCovid(string[] Content, string date)
+        public async Task<List<Vaccinateds>> GetListVaccinateds()
+        {
+            try
+            {
+                //Date,UID,Province_State,Country_Region,Doses_admin,People_at_least_one_dose
+                var FileNameVaccinateds = "https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_global.csv";
+                var ListVaccinateds = new List<Vaccinateds>();
+                string[] Content = await GetStringCsvFile(FileNameVaccinateds);
+                var Countries = _dbContext.Country.ToList();
+
+                foreach (var line in Content.Skip(1))
+                {
+                    var values = line.Split(',');
+                    var Date = string.IsNullOrEmpty(values[0]) ? string.Empty : values[0];
+                    var UID = string.IsNullOrEmpty(values[1]) ? 0 : int.Parse(values[1]);
+                    var Country_Region = string.IsNullOrEmpty(values[3]) ? string.Empty : values[3];
+                    var Doses_admin = string.IsNullOrEmpty(values[4]) ? 0 : decimal.Parse(values[4]);
+                    var People_at_least_one_dose = string.IsNullOrEmpty(values[5]) ? 0 : decimal.Parse(values[5]);
+                    var DateReport = DateTime.Parse(Date).Date.ToUniversalTime();
+                    var currentCountry = Countries.Where(t => t.Country_Name == Country_Region).FirstOrDefault();
+
+                    if (currentCountry != null)
+                    {
+                        if (currentCountry.Country_Name == "World")
+                            UID = 1;
+
+                        var DataVaccinated = new Vaccinateds
+                        {
+                            CountryId = UID,
+                            AtLeastOneDosis = People_at_least_one_dose,
+                            Dosis = Doses_admin,
+                            DateReport = DateReport
+                        };
+
+                        ListVaccinateds.Add(DataVaccinated);
+                    }
+
+
+                }
+
+
+
+                return ListVaccinateds;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+           
+        }
+
+        //Permite el mapeo de los datos para los casos de todos los paises
+        private List<Cases> GetListWorldCasesCovid(string[] Content, string date)
         {
             try
             {
@@ -198,11 +239,12 @@ namespace API_COVID19.BusinessLogic
         }
 
 
+        // Permite la inserción de los paises y departamentos('Estados')
         public async Task<List<Country>> GetCountriesStructure()
         {
             try
             {
-                var urlFile = RepoCountryStructureUrl + TypeCsvExt;
+                var urlFile = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv";
                 string[] lines = await GetStringCsvFile(urlFile);
 
                 var Countries = new List<Country>();
@@ -253,13 +295,25 @@ namespace API_COVID19.BusinessLogic
                         if (Code3 == 840)
                         {
                             var iso3 = string.IsNullOrEmpty(values[2]) ? string.Empty : values[2];
+                            
                             if (iso3.Equals("USA") && FIPS == 56)
+                            {
+                                var country = new Country
+                                {
+                                    Id = 1,
+                                    Country_Name = "World",
+                                    Combined_Key = "World"
+                                };
+     
+                                Countries.Add(country);
                                 break;
+                            }
+
                         }
                     }
                 }
 
-                //240 registers
+                //241 registers
                 return Countries;
             }
             catch (Exception)

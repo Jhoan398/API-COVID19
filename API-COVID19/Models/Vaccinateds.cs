@@ -12,6 +12,8 @@ namespace API_COVID19.Models
         public decimal Dosis { get; set; }
         public decimal AtLeastOneDosis { get; set; }
 
+        public DateTime DateReport { get; set; }    
+
         public int CountryId { get; set; }
 
         [ForeignKey("CountryId")]

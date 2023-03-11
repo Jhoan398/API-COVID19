@@ -23,28 +23,13 @@ namespace API_COVID19.Controllers
         {
             try
             {
-                var FileName = _UFContext.RepoDataCovidUrl + dateReport + _UFContext.TypeCsvExt;
-                var FileNameUSA = _UFContext.RepoUSADataCovidUrl + dateReport + _UFContext.TypeCsvExt;
 
-                string[] ContentUSA = await _UFContext.GetStringCsvFile(FileNameUSA);
-                var USACases = _UFContext.GetListCasesCovidUSA(ContentUSA, dateReport);
-
-                string[] Content = await _UFContext.GetStringCsvFile(FileName);
-                var WorldCases = _UFContext.GetListDataCovid(Content, dateReport);
-
+                var WorldWideCases = await _UFContext.GetWorldWideCases(dateReport);
                 
-                if (!USACases.Any() || !WorldCases.Any())
+                if (!WorldWideCases.Any())
                     throw new Exception();
 
-
-                var dicCases = new Dictionary<string, List<Cases>>
-                {
-                    { "AllWorld", WorldCases },
-                    { "USA", USACases}
-                };
-
-
-                foreach (var Cases in dicCases)
+                foreach (var Cases in WorldWideCases)
                 {
                     await _UFContext.SaveCasesToDB(Cases.Value);
                 }
@@ -65,7 +50,7 @@ namespace API_COVID19.Controllers
             try
             {
 
-
+                var Vaccinateds = await _UFContext.GetListVaccinateds();
 
                 return Ok();
             }
@@ -77,7 +62,7 @@ namespace API_COVID19.Controllers
         }
 
         [HttpGet]
-        [Route("GetDataCountries")]
+        [Route("GetCountriesStructureData")]
         public async Task<IActionResult> LoadCountries()
         {
             try
@@ -86,7 +71,7 @@ namespace API_COVID19.Controllers
                 if (ListCountries.Count == 0)
                     throw new Exception();
 
-               // _db.SaveDBData(ListCountries);
+                _UFContext.SaveDBData(ListCountries);
                 return Ok();
             }
             catch (Exception)
