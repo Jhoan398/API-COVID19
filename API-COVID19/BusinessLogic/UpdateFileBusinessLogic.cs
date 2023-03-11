@@ -244,6 +244,7 @@ namespace API_COVID19.BusinessLogic
         {
             try
             {
+                //UID	iso2	iso3	code3	FIPS	Admin2	Province_State	Country_Region	Lat	Long_	Combined_Key	Population
                 var urlFile = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv";
                 string[] lines = await GetStringCsvFile(urlFile);
 
@@ -254,24 +255,47 @@ namespace API_COVID19.BusinessLogic
                     var UID = int.Parse(values[0]);
                     var Code3 = string.IsNullOrEmpty(values[3]) ? UID : int.Parse(values[3]);
                     var FIPS = string.IsNullOrEmpty(values[4]) ? 0 : int.Parse(values[4]);
+                    var provinceState = string.IsNullOrEmpty(values[6]) ? string.Empty : values[6];
+                    var countryRegion = string.IsNullOrEmpty(values[7]) ? string.Empty : values[7];
+                    var strKeyCombined = string.Empty;
+                    var Population = new decimal();
+
+                    if (values.Length == 12)
+                    {
+                        strKeyCombined = countryRegion;
+                        Population = string.IsNullOrEmpty(values[11]) ? 0 : decimal.Parse(values[11]);
+                    }
+                    else if (values.Length == 13)
+                    {
+                        strKeyCombined = provinceState + ", " + countryRegion;
+                        Population = string.IsNullOrEmpty(values[12]) ? 0 : decimal.Parse(values[12]);
+                    }
+                    else if (values.Length == 14)
+                    {
+                        provinceState = string.IsNullOrEmpty(values[8]) ? string.Empty : values[8];
+                        strKeyCombined = countryRegion + ", " + provinceState; //"Korea, South"
+                        countryRegion = strKeyCombined;
+                        Population = string.IsNullOrEmpty(values[13]) ? 0 : decimal.Parse(values[13]);
+                    }
+                    else 
+                    {
+                        provinceState = provinceState + ", " + countryRegion;
+                        countryRegion = string.IsNullOrEmpty(values[8]) ? string.Empty : values[8];
+                        strKeyCombined = provinceState + ", " +countryRegion; //"Bonaire,  Sint Eustatius and Saba", Netherlands
+                        Population = string.IsNullOrEmpty(values[14]) ? 0 : decimal.Parse(values[14]);
+                    }
 
                     // Add Countries
                     var currentCountry = Countries.Find(x => x.Id == Code3);
                     if (currentCountry == null)
                     {
-                        var strKeyCombined = string.IsNullOrEmpty(values[10]) ? string.Empty : (values[10]);
-                        var countryRegion = string.IsNullOrEmpty(values[7]) ? string.Empty : values[7];
-
-
-                        if (strKeyCombined.Contains("\""))
-                            strKeyCombined = values[6] + ", " + countryRegion;
 
                         var country = new Country
                         {
                             Id = UID,
                             Country_Name = countryRegion,
-                            Combined_Key = strKeyCombined
-
+                            Combined_Key = strKeyCombined,
+                            Populate = Population
                         };
 
                         Countries.Add(country);
@@ -279,13 +303,13 @@ namespace API_COVID19.BusinessLogic
                     else
                     {
                         // Add Province States
-                        var Province_Name = string.IsNullOrEmpty(values[6]) ? string.Empty : values[6];
                         var ProvinceState = new ProvinceState
                         {
                             Id = UID,
                             CountryId = currentCountry.Id,
-                            ProvinceName = Province_Name,
+                            ProvinceName = provinceState,
                             Country = currentCountry,
+                            Populate = Population
                         };
 
                         currentCountry.ProvinceStates.Add(ProvinceState);
@@ -295,7 +319,8 @@ namespace API_COVID19.BusinessLogic
                         if (Code3 == 840)
                         {
                             var iso3 = string.IsNullOrEmpty(values[2]) ? string.Empty : values[2];
-                            
+
+                            // Termino de tomar los estados de USA y termino agregando el ultimo de registro del "mundo"
                             if (iso3.Equals("USA") && FIPS == 56)
                             {
                                 var country = new Country
@@ -316,10 +341,10 @@ namespace API_COVID19.BusinessLogic
                 //241 registers
                 return Countries;
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
-                throw;
+                throw e;
             }
         }
 
