@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APICOVID19.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230308233919_New model V.1.0")]
-    partial class NewmodelV10
+    [Migration("20230311152019_Add Populated V1.0.1")]
+    partial class AddPopulatedV101
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,14 +39,18 @@ namespace APICOVID19.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("DateReport")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<decimal>("Deaths")
                         .HasColumnType("numeric");
 
-                    b.Property<int?>("ProvinceStateCaseId")
+                    b.Property<int?>("ProvinceStateId")
+                        .IsRequired()
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProvinceStateId")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Recovered")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -72,6 +76,9 @@ namespace APICOVID19.Migrations
                     b.Property<string>("Country_Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("Populate")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -141,6 +148,9 @@ namespace APICOVID19.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("Populate")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("ProvinceName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -165,6 +175,9 @@ namespace APICOVID19.Migrations
 
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateReport")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Dosis")
                         .HasColumnType("numeric");

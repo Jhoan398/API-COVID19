@@ -11,6 +11,8 @@ namespace API_COVID19.Models
         public string ProvinceName { get; set; } = String.Empty;
         public int CountryId { get; set; }
 
+        public decimal Populate { get; set; }
+
         [ForeignKey("CountryId")]
         public virtual Country Country { get; set; }
 

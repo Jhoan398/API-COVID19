@@ -74,6 +74,9 @@ namespace APICOVID19.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("Populate")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
 
                     b.ToTable("Country");
@@ -141,6 +144,9 @@ namespace APICOVID19.Migrations
 
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("Populate")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("ProvinceName")
                         .IsRequired()

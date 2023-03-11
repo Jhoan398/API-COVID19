@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APICOVID19.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230311045554_Fix Vaccinateds")]
-    partial class FixVaccinateds
+    [Migration("20230311150226_New Schema V1.0.0")]
+    partial class NewSchemaV100
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
