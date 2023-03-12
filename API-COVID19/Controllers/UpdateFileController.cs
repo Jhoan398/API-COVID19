@@ -56,13 +56,11 @@ namespace API_COVID19.Controllers
 
         [HttpGet]
         [Route("GetDateReportCases")]
-        public async Task<IActionResult> GetDateReportCases(string dateReport)
+        public async Task<IActionResult> GetDateReportCases(DateTime dateReport)
         {
             try
             {
-                var date = DateTime.Parse(dateReport);
-
-                var WorldWideCases = await _UFContext.GetWorldWideCases(date);
+                var WorldWideCases = await _UFContext.GetWorldWideCases(dateReport);
                 
                 if (!WorldWideCases.Any())
                     throw new Exception();

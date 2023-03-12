@@ -74,10 +74,11 @@ namespace API_COVID19.BusinessLogic
         public async Task<Dictionary<string, List<Cases>>> GetWorldWideCases(DateTime dateReport) 
         {
             var TypeCsvExt = ".csv";
+            var FormatDate = dateReport.ToString("MM-dd-yyyy");
             var RepoDataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/";
             var RepoUSADataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/";
-            var FileName = RepoDataCovidUrl + dateReport.ToString("MM-dd-yyyy") + TypeCsvExt;
-            var FileNameUSA = RepoUSADataCovidUrl + dateReport.ToString("MM-dd-yyyy") + TypeCsvExt;
+            var FileName = RepoDataCovidUrl + FormatDate + TypeCsvExt;
+            var FileNameUSA = RepoUSADataCovidUrl + FormatDate + TypeCsvExt;
 
 
             string[] ContentUSA = await GetStringCsvFile(FileNameUSA);
