@@ -18,20 +18,58 @@ namespace API_COVID19.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllCovidCases")]
+        public async Task<IActionResult> GetDateReportCases() 
+        {
+            try
+            {
+                var startDate = new DateTime(2021, 1, 1);
+                var endDate = DateTime.Now.AddDays(-1); // Ayer
+
+                var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                                       .Select(day => startDate.AddDays(day))
+                                                       .ToList();
+
+                var dicCases = new Dictionary<string, List<Cases>>();
+                var WorldWideList = new List<Cases>();
+
+                foreach (var DateReport in dates)
+                {
+                    var WorldWideCases = await _UFContext.GetWorldWideCases(DateReport);
+                    WorldWideList = WorldWideCases.Values.SelectMany(casesList => casesList).ToList();
+                    dicCases.Add(DateReport.ToString("dd-MM-yyyy"), WorldWideList);
+                }
+
+                WorldWideList = dicCases.Values.SelectMany(casesList => casesList).ToList();
+                await _UFContext.SaveCountriesCasesToDB(WorldWideList);
+
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        [HttpGet]
         [Route("GetDateReportCases")]
         public async Task<IActionResult> GetDateReportCases(string dateReport)
         {
             try
             {
+                var date = DateTime.Parse(dateReport);
 
-                var WorldWideCases = await _UFContext.GetWorldWideCases(dateReport);
+                var WorldWideCases = await _UFContext.GetWorldWideCases(date);
                 
                 if (!WorldWideCases.Any())
                     throw new Exception();
 
                 foreach (var Cases in WorldWideCases)
                 {
-                    await _UFContext.SaveCasesToDB(Cases.Value);
+                    await _UFContext.SaveCountriesCasesToDB(Cases.Value);
                 }
 
                 return Ok();
@@ -51,6 +89,11 @@ namespace API_COVID19.Controllers
             {
 
                 var Vaccinateds = await _UFContext.GetListVaccinateds();
+                if (!Vaccinateds.Any())
+                    throw new Exception();
+
+
+                await _UFContext.SaveCountriesVaccinatedToDB(Vaccinateds);
 
                 return Ok();
             }
@@ -71,7 +114,7 @@ namespace API_COVID19.Controllers
                 if (ListCountries.Count == 0)
                     throw new Exception();
 
-                _UFContext.SaveDBData(ListCountries);
+                _UFContext.SaveCountriesStructureToDB(ListCountries);
                 return Ok();
             }
             catch (Exception)

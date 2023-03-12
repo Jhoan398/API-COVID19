@@ -2,6 +2,7 @@
 using API_COVID19.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -20,7 +21,7 @@ namespace API_COVID19.BusinessLogic
         }
 
 
-        public async void SaveDBData(List<Country> countries)
+        public async void SaveCountriesStructureToDB(List<Country> countries)
         {
 
             try
@@ -37,7 +38,7 @@ namespace API_COVID19.BusinessLogic
 
         }
 
-        public async Task SaveCasesToDB(List<Cases> ListCasesCovid)
+        public async Task SaveCountriesCasesToDB(List<Cases> ListCasesCovid)
         {
             try
             {
@@ -52,14 +53,31 @@ namespace API_COVID19.BusinessLogic
             }
             
         }
+        public async Task SaveCountriesVaccinatedToDB(List<Vaccinateds> ListVaccinateds)
+        {
+            try
+            {
+                _dbContext.Vaccinateds.AddRange(ListVaccinateds);
+                _dbContext.SaveChanges();
 
-        public async Task<Dictionary<string, List<Cases>>>  GetWorldWideCases(string dateReport) 
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
+        }
+
+
+
+        public async Task<Dictionary<string, List<Cases>>> GetWorldWideCases(DateTime dateReport) 
         {
             var TypeCsvExt = ".csv";
             var RepoDataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/";
             var RepoUSADataCovidUrl = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/";
-            var FileName = RepoDataCovidUrl + dateReport + TypeCsvExt;
-            var FileNameUSA = RepoUSADataCovidUrl + dateReport + TypeCsvExt;
+            var FileName = RepoDataCovidUrl + dateReport.ToString("MM-dd-yyyy") + TypeCsvExt;
+            var FileNameUSA = RepoUSADataCovidUrl + dateReport.ToString("MM-dd-yyyy") + TypeCsvExt;
 
 
             string[] ContentUSA = await GetStringCsvFile(FileNameUSA);
@@ -72,8 +90,8 @@ namespace API_COVID19.BusinessLogic
 
             var dicCases = new Dictionary<string, List<Cases>>
             {
-                { "WORLD", WorldCases },
-                { "USA", USACases}
+                { "World" , WorldCases },
+                { "USA" , USACases }
             };
 
 
@@ -83,11 +101,10 @@ namespace API_COVID19.BusinessLogic
 
 
         //Permite el mapeo de los datos para los casos de estados unidos
-        private List<Cases> GetListCasesCovidUSA(string[] Content, string date)
+        private List<Cases> GetListCasesCovidUSA(string[] Content, DateTime DateReport)
         {
             var ListCasesCovid = new List<Cases>();
             var USACountry = _dbContext.Country.Include(t => t.ProvinceStates).Where(p => p.Id == 840).FirstOrDefault();
-            var DateReport = DateTime.Parse(date).Date.ToUniversalTime();
 
             foreach (var line in Content.Skip(1))
             {
@@ -114,7 +131,7 @@ namespace API_COVID19.BusinessLogic
                         Deaths = Deaths,
                         Confirmed = Confirmed,
                         Recovered = Recovered,
-                        DateReport = DateReport,
+                        DateReport = DateReport.ToUniversalTime(),
                         ProvinceStateId = ProvinceState.Id,
                     };
 
@@ -142,19 +159,31 @@ namespace API_COVID19.BusinessLogic
                 foreach (var line in Content.Skip(1))
                 {
                     var values = line.Split(',');
+                    
+                    if (string.IsNullOrEmpty(values[0]))
+                        break;
+                    
                     var Date = string.IsNullOrEmpty(values[0]) ? string.Empty : values[0];
-                    var UID = string.IsNullOrEmpty(values[1]) ? 0 : int.Parse(values[1]);
-                    var Country_Region = string.IsNullOrEmpty(values[3]) ? string.Empty : values[3];
-                    var Doses_admin = string.IsNullOrEmpty(values[4]) ? 0 : decimal.Parse(values[4]);
-                    var People_at_least_one_dose = string.IsNullOrEmpty(values[5]) ? 0 : decimal.Parse(values[5]);
+                    var UID = string.IsNullOrEmpty(values[1]) ? 1 : int.Parse(values[1]);
+                    var Doses_admin = new decimal();
+                    var People_at_least_one_dose = new decimal();
                     var DateReport = DateTime.Parse(Date).Date.ToUniversalTime();
-                    var currentCountry = Countries.Where(t => t.Country_Name == Country_Region).FirstOrDefault();
 
+                    if (values.Length == 6)
+                    {
+                        Doses_admin = string.IsNullOrEmpty(values[4]) ? 0 : decimal.Parse(values[4]);
+                        People_at_least_one_dose = string.IsNullOrEmpty(values[5]) ? 0 : decimal.Parse(values[5]);
+                    }
+                    else if (values.Length == 7)
+                    {
+                        Doses_admin = string.IsNullOrEmpty(values[5]) ? 0 : decimal.Parse(values[5]); // "Korea, South"
+                        People_at_least_one_dose = string.IsNullOrEmpty(values[6]) ? 0 : decimal.Parse(values[6]);
+                    } 
+                    
+                    var currentCountry = Countries.Where(t => t.Id == UID).FirstOrDefault();
+                    
                     if (currentCountry != null)
                     {
-                        if (currentCountry.Country_Name == "World")
-                            UID = 1;
-
                         var DataVaccinated = new Vaccinateds
                         {
                             CountryId = UID,
@@ -182,13 +211,12 @@ namespace API_COVID19.BusinessLogic
         }
 
         //Permite el mapeo de los datos para los casos de todos los paises
-        private List<Cases> GetListWorldCasesCovid(string[] Content, string date)
+        private List<Cases> GetListWorldCasesCovid(string[] Content, DateTime DateReport)
         {
             try
             {
                 var ListCasesCovid = new List<Cases>();
                 var ListCountries = _dbContext.Country.Include(t => t.ProvinceStates).ToList<Country>();
-                var DateReport = DateTime.Parse(date).Date.ToUniversalTime();
 
                 foreach (var line in Content.Skip(1))
                 {
@@ -219,7 +247,7 @@ namespace API_COVID19.BusinessLogic
                             Deaths = Deaths,
                             Confirmed = Confirmed,
                             Recovered = Recovered,
-                            DateReport = DateReport,
+                            DateReport = DateReport.ToUniversalTime(),
                             ProvinceStateId = ProvinceState != null ? ProvinceState.Id : null,
                         };
 
@@ -327,7 +355,7 @@ namespace API_COVID19.BusinessLogic
                                 {
                                     Id = 1,
                                     Country_Name = "World",
-                                    Combined_Key = "World"
+                                    Combined_Key = "World",
                                 };
      
                                 Countries.Add(country);
