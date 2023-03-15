@@ -24,7 +24,7 @@ namespace API_COVID19.Controllers
             try
             {
                 var startDate = new DateTime(2021, 1, 1);
-                var endDate = DateTime.Now.AddDays(-1); // Ayer
+                var endDate = new DateTime(2023, 3, 9); ; // Ayer
 
                 var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
                                                        .Select(day => startDate.AddDays(day))

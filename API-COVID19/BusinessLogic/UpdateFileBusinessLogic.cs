@@ -70,7 +70,7 @@ namespace API_COVID19.BusinessLogic
         }
 
 
-
+        //Permite el mapeo de los datos para los casos de todos los paises acumula USA y resto del mundo
         public async Task<Dictionary<string, List<Cases>>> GetWorldWideCases(DateTime dateReport) 
         {
             var TypeCsvExt = ".csv";
@@ -337,6 +337,7 @@ namespace API_COVID19.BusinessLogic
                             Id = UID,
                             CountryId = currentCountry.Id,
                             ProvinceName = provinceState,
+                            
                             Country = currentCountry,
                             Populate = Population
                         };
@@ -356,7 +357,7 @@ namespace API_COVID19.BusinessLogic
                                 {
                                     Id = 1,
                                     Country_Name = "World",
-                                    Combined_Key = "World",
+                                    Combined_Key = "World"
                                 };
      
                                 Countries.Add(country);
@@ -394,6 +395,7 @@ namespace API_COVID19.BusinessLogic
             }
 
         }
+
 
     }
 }

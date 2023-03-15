@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APICOVID19.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230311152019_Add Populated V1.0.1")]
-    partial class AddPopulatedV101
+    [Migration("20230315002309_Create DB")]
+    partial class CreateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,7 +85,7 @@ namespace APICOVID19.Migrations
                     b.ToTable("Country");
                 });
 
-            modelBuilder.Entity("API_COVID19.Models.Frecuency", b =>
+            modelBuilder.Entity("API_COVID19.Models.Frequency", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,19 +93,22 @@ namespace APICOVID19.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Active")
+                    b.Property<decimal>("Confirmed")
                         .HasColumnType("numeric");
 
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DateReport")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("DateReport")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Deaths")
                         .HasColumnType("numeric");
 
                     b.Property<int>("FrecuencyTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FrequencyTypeId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Recovered")
@@ -115,12 +118,12 @@ namespace APICOVID19.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("FrecuencyTypeId");
+                    b.HasIndex("FrequencyTypeId");
 
-                    b.ToTable("Frecuency");
+                    b.ToTable("Frequency");
                 });
 
-            modelBuilder.Entity("API_COVID19.Models.FrecuencyType", b =>
+            modelBuilder.Entity("API_COVID19.Models.FrequencyType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -128,13 +131,13 @@ namespace APICOVID19.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Frecuency")
+                    b.Property<string>("Frequency")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Frecuency_Type");
+                    b.ToTable("Frequency_Type");
                 });
 
             modelBuilder.Entity("API_COVID19.Models.ProvinceState", b =>
@@ -212,7 +215,7 @@ namespace APICOVID19.Migrations
 
             modelBuilder.Entity("API_COVID19.Models.Cases", b =>
                 {
-                    b.HasOne("API_COVID19.Models.Country", "CountryCaseReport")
+                    b.HasOne("API_COVID19.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -224,12 +227,12 @@ namespace APICOVID19.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CountryCaseReport");
+                    b.Navigation("Country");
 
                     b.Navigation("ProvinceState");
                 });
 
-            modelBuilder.Entity("API_COVID19.Models.Frecuency", b =>
+            modelBuilder.Entity("API_COVID19.Models.Frequency", b =>
                 {
                     b.HasOne("API_COVID19.Models.Country", "Country")
                         .WithMany()
@@ -237,15 +240,15 @@ namespace APICOVID19.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API_COVID19.Models.FrecuencyType", "FrecuencyType")
+                    b.HasOne("API_COVID19.Models.FrequencyType", "FrequencyType")
                         .WithMany()
-                        .HasForeignKey("FrecuencyTypeId")
+                        .HasForeignKey("FrequencyTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Country");
 
-                    b.Navigation("FrecuencyType");
+                    b.Navigation("FrequencyType");
                 });
 
             modelBuilder.Entity("API_COVID19.Models.ProvinceState", b =>

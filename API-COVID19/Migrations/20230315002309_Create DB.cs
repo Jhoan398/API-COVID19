@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APICOVID19.Migrations
 {
     /// <inheritdoc />
-    public partial class NewSchemaV100 : Migration
+    public partial class CreateDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace APICOVID19.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CountryName = table.Column<string>(name: "Country_Name", type: "text", nullable: false),
-                    CombinedKey = table.Column<string>(name: "Combined_Key", type: "text", nullable: false)
+                    CombinedKey = table.Column<string>(name: "Combined_Key", type: "text", nullable: false),
+                    Populate = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,16 +28,16 @@ namespace APICOVID19.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Frecuency_Type",
+                name: "Frequency_Type",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Frecuency = table.Column<string>(type: "text", nullable: false)
+                    Frequency = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Frecuency_Type", x => x.Id);
+                    table.PrimaryKey("PK_Frequency_Type", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,7 +61,8 @@ namespace APICOVID19.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProvinceName = table.Column<string>(type: "text", nullable: false),
-                    CountryId = table.Column<int>(type: "integer", nullable: false)
+                    CountryId = table.Column<int>(type: "integer", nullable: false),
+                    Populate = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,31 +98,32 @@ namespace APICOVID19.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Frecuency",
+                name: "Frequency",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Deaths = table.Column<decimal>(type: "numeric", nullable: false),
+                    Confirmed = table.Column<decimal>(type: "numeric", nullable: false),
                     Recovered = table.Column<decimal>(type: "numeric", nullable: false),
-                    Active = table.Column<decimal>(type: "numeric", nullable: false),
-                    DateReport = table.Column<int>(type: "integer", nullable: false),
+                    DateReport = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CountryId = table.Column<int>(type: "integer", nullable: false),
-                    FrecuencyTypeId = table.Column<int>(type: "integer", nullable: false)
+                    FrecuencyTypeId = table.Column<int>(type: "integer", nullable: false),
+                    FrequencyTypeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Frecuency", x => x.Id);
+                    table.PrimaryKey("PK_Frequency", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Frecuency_Country_CountryId",
+                        name: "FK_Frequency_Country_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Country",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Frecuency_Frecuency_Type_FrecuencyTypeId",
-                        column: x => x.FrecuencyTypeId,
-                        principalTable: "Frecuency_Type",
+                        name: "FK_Frequency_Frequency_Type_FrequencyTypeId",
+                        column: x => x.FrequencyTypeId,
+                        principalTable: "Frequency_Type",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -135,7 +138,7 @@ namespace APICOVID19.Migrations
                     Confirmed = table.Column<decimal>(type: "numeric", nullable: false),
                     Recovered = table.Column<decimal>(type: "numeric", nullable: false),
                     CountryId = table.Column<int>(type: "integer", nullable: false),
-                    ProvinceStateId = table.Column<int>(type: "integer", nullable: true),
+                    ProvinceStateId = table.Column<int>(type: "integer", nullable: false),
                     DateReport = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -166,14 +169,14 @@ namespace APICOVID19.Migrations
                 column: "ProvinceStateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Frecuency_CountryId",
-                table: "Frecuency",
+                name: "IX_Frequency_CountryId",
+                table: "Frequency",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Frecuency_FrecuencyTypeId",
-                table: "Frecuency",
-                column: "FrecuencyTypeId");
+                name: "IX_Frequency_FrequencyTypeId",
+                table: "Frequency",
+                column: "FrequencyTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Province_state_CountryId",
@@ -193,7 +196,7 @@ namespace APICOVID19.Migrations
                 name: "Cases");
 
             migrationBuilder.DropTable(
-                name: "Frecuency");
+                name: "Frequency");
 
             migrationBuilder.DropTable(
                 name: "Vaccinateds");
@@ -205,7 +208,7 @@ namespace APICOVID19.Migrations
                 name: "Province_state");
 
             migrationBuilder.DropTable(
-                name: "Frecuency_Type");
+                name: "Frequency_Type");
 
             migrationBuilder.DropTable(
                 name: "Country");

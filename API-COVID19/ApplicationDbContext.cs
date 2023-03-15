@@ -21,8 +21,8 @@ namespace API_COVID19
         public DbSet<ProvinceState> ProvinceState { get; set; }
         public DbSet<Vaccinateds> Vaccinateds { get; set; }
         public DbSet<WorldmapData> WorldmapData { get; set; }
-        public DbSet<Frecuency> Frecuency { get; set; }
-        public DbSet<FrecuencyType> FrecuencyType { get; set; }
+        public DbSet<Frequency> Frequency { get; set; }
+        public DbSet<FrequencyType> FrequencyType { get; set; }
 
     }
 }
