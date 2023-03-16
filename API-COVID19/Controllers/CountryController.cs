@@ -25,7 +25,6 @@ namespace API_COVID19.Controllers
         [Route("GetCountries")]
         public async Task<IActionResult> GetCountriesAsync() 
         {
-            var type = ResponseType.Succes;
 
             try
             {
