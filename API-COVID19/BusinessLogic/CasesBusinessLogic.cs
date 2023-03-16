@@ -51,7 +51,7 @@ namespace API_COVID19.BusinessLogic
                 Recovered = _dbContext.Cases
                    .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
                    .Sum(c => c.Recovered),
-                   CountryId = CountryId
+                CountryId = CountryId
             };
 
 
@@ -66,6 +66,50 @@ namespace API_COVID19.BusinessLogic
 
             return _dbContext.Cases.Where(t => t.ProvinceStateId == PronvinceState.Id).ToList();
         }
+
+        public async Task<List<Cases>> GetCasesByCountry(int CountryId, DateTime InitialDate, DateTime? FinalDate) 
+        {
+            var listCases = new List<Cases>();
+            var Case = new Cases();
+
+            if (FinalDate.HasValue)
+            {
+                FinalDate = FinalDate.Value.ToUniversalTime();
+
+                Case = new Cases
+                {
+                    Confirmed = _dbContext.Cases
+                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
+                   .Sum(c => c.Confirmed),
+                    Deaths = _dbContext.Cases
+                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
+                   .Sum(c => c.Deaths),
+                    Recovered = _dbContext.Cases
+                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
+                   .Sum(c => c.Recovered),
+                    CountryId = CountryId
+                };
+            }
+            else 
+            {
+                var DataCases = _dbContext.Cases.Where(t => t.CountryId == CountryId && t.DateReport == InitialDate.ToUniversalTime());
+                Case = new Cases
+                {
+                    Confirmed = DataCases
+                    .Sum(c => c.Confirmed),
+                    Deaths = DataCases
+                    .Sum(c => c.Deaths),
+                    Recovered = DataCases
+                    .Sum(c => c.Recovered),
+                    CountryId = CountryId,
+                    DateReport = InitialDate
+                };
+            }
+
+            listCases.Add(Case);
+
+            return listCases;
+        }  
 
     }
 }

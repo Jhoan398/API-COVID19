@@ -17,6 +17,33 @@ namespace API_COVID19.Controllers
         }
 
         [HttpGet]
+        [Route("CountryCasesById")]
+        public async Task<IActionResult> CountryCasesById(int CountryId, DateTime InitialDate, DateTime? FinalDate)
+        {
+
+
+            var type = ResponseType.Succes;
+
+            try
+            {
+                var Cases = await _db.GetCasesByCountry(CountryId, InitialDate, FinalDate);
+
+                if (Cases == null)
+                    type = ResponseType.NotFound;
+
+
+                return Ok(ResponseHandler.GetAppResponse(type, Cases));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+
+        [HttpGet]
         [Route("CasesBeetwenDatesByCountryId")]
         public async Task<IActionResult> CasesBeetwenDatesByCountryId(DateTime InitialDate, DateTime FinalDate, int CountryId) 
         {
@@ -39,49 +66,6 @@ namespace API_COVID19.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("CasesByCountryName")]
-        public async Task<IActionResult> CasesByCountryName(string CountryName)
-        {
-            var type = ResponseType.Succes;
-
-            try
-            {
-                var Cases = _db.GetCasesByCountryName(CountryName);
-
-                if (!Cases.Any())
-                    type = ResponseType.NotFound;
-
-
-                return Ok(ResponseHandler.GetAppResponse(type, Cases));
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        [HttpGet]
-        [Route("CasesByCountryId")]
-        public async Task<IActionResult> CasesByCountryId(int CountryID)
-        {
-            var type = ResponseType.Succes;
-
-            try
-            {
-                var Cases = await _db.GetCasesByCountryId(CountryID);
-
-                if (!Cases.Any())
-                    type = ResponseType.NotFound;
-
-                return Ok(ResponseHandler.GetAppResponse(type, Cases));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
         [HttpGet]
         [Route("CasesByCountry_ProvinceStateId")]
@@ -116,7 +100,7 @@ namespace API_COVID19.Controllers
             {
                 var Cases = await _db.GetCasesByCountry_PronvinceName(CountryName, ProvinceStateName);
 
-                 if (!Cases.Any())
+                if (!Cases.Any())
                     type = ResponseType.NotFound;
 
 

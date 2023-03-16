@@ -15,9 +15,30 @@ namespace API_COVID19.Controllers
             _UFContext = new FrequencyBusinessLogic(AppDataContext);
         }
 
+
+        [HttpGet]
+        [Route("FrecuencyByTypeFrecuency")]
+        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrecuency, int countryID, DateTime? Date) 
+        {
+            try
+            {
+                var FecuencyData = await _UFContext.GetFrecuencyByTypeFrecuency(TypeFrecuency, countryID, Date);
+
+
+                return Ok(FecuencyData);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+
+
+        }
+
         [HttpGet]
         [Route("GetDataFrecuency")]
-        public async Task<IActionResult> GetDataFrecuency() 
+        public async Task<IActionResult> DataFrecuency() 
         {
             try
             {
