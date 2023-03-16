@@ -10,6 +10,8 @@ namespace API_COVID19.Models
         [Key, Required]
         public int Id { get; set; }
         public string Country_Name { get; set; } = String.Empty;
-        public virtual ICollection<ProvinceState> ProvinceStates { get; set; }
+        public string Combined_Key { get; set; } = String.Empty;
+        public decimal Populate { get; set; } 
+        public virtual List<ProvinceState> ProvinceStates { get; set; } = new List<ProvinceState>();
     }
 }

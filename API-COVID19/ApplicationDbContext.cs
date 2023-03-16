@@ -10,14 +10,19 @@ namespace API_COVID19
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
-            modelBuilder.Entity<Country>()
-                .HasMany(s => s.ProvinceStates)
-                .WithOne(s => s.Country)
-                .HasForeignKey(c => c.CountryId);
+            //modelBuilder.Entity<Country>()
+            //    .HasMany(s => s.ProvinceStates)
+            //    .WithOne(s => s.Country)
+            //    .HasForeignKey(c => c.CountryId);
         }
 
         public DbSet<Country> Country { get; set; }
-        public DbSet<CountryDataCovid> CountryDataCovid { get; set; }
+        public DbSet<Cases> Cases { get; set; }
         public DbSet<ProvinceState> ProvinceState { get; set; }
+        public DbSet<Vaccinateds> Vaccinateds { get; set; }
+        public DbSet<WorldmapData> WorldmapData { get; set; }
+        public DbSet<Frequency> Frequency { get; set; }
+        public DbSet<FrequencyType> FrequencyType { get; set; }
+
     }
 }

@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API_COVID19.BusinessLogic;
+using API_COVID19.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static API_COVID19.Models.ApiResponse;
 
 namespace API_COVID19.Controllers
 {
@@ -6,42 +10,116 @@ namespace API_COVID19.Controllers
     [Route("UpdateData")]
     public class UpdateFileController : Controller
     {
-        [HttpGet]
-        [Route("GetLastDailyReportFile")]
-        public async Task<IActionResult> GetLastDailyReportFile() 
+        private readonly UpdateFileBusinessLogic _UFContext;
+
+        public UpdateFileController(ApplicationDbContext AppDataContext) 
         {
-            using(var client  = new HttpClient() )
+            _UFContext = new UpdateFileBusinessLogic(AppDataContext);
+        }
+
+        [HttpGet]
+        [Route("GetAllCovidCases")]
+        public async Task<IActionResult> GetDateReportCases() 
+        {
+            try
             {
-                var urlFile = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/01-11-2023.csv";
+                var startDate = new DateTime(2021, 1, 1);
+                var endDate = new DateTime(2023, 3, 9); ; // Ayer
 
-                using (var response = await client.GetAsync(urlFile) )
+                var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                                       .Select(day => startDate.AddDays(day))
+                                                       .ToList();
+
+                var dicCases = new Dictionary<string, List<Cases>>();
+                var WorldWideList = new List<Cases>();
+
+                foreach (var DateReport in dates)
                 {
-                    response.EnsureSuccessStatusCode();
-                    var fileContent = await response.Content.ReadAsStringAsync();
-
+                    var WorldWideCases = await _UFContext.GetWorldWideCases(DateReport);
+                    WorldWideList = WorldWideCases.Values.SelectMany(casesList => casesList).ToList();
+                    dicCases.Add(DateReport.ToString("dd-MM-yyyy"), WorldWideList);
                 }
 
-                return Ok("File downloaded succesfully");
+                WorldWideList = dicCases.Values.SelectMany(casesList => casesList).ToList();
+                await _UFContext.SaveCountriesCasesToDB(WorldWideList);
+
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        [HttpGet]
+        [Route("GetDateReportCases")]
+        public async Task<IActionResult> GetDateReportCases(DateTime dateReport)
+        {
+            try
+            {
+                var WorldWideCases = await _UFContext.GetWorldWideCases(dateReport);
+                
+                if (!WorldWideCases.Any())
+                    throw new Exception();
+
+                foreach (var Cases in WorldWideCases)
+                {
+                    await _UFContext.SaveCountriesCasesToDB(Cases.Value);
+                }
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            
+        }
+
+        [HttpGet]
+        [Route("GetDateReportVaccinateds")]
+        public async Task<IActionResult> GetDateReportVaccinateds()
+        {
+            try
+            {
+
+                var Vaccinateds = await _UFContext.GetListVaccinateds();
+                if (!Vaccinateds.Any())
+                    throw new Exception();
+
+
+                await _UFContext.SaveCountriesVaccinatedToDB(Vaccinateds);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return BadRequest();
             }
         }
 
         [HttpGet]
-        [Route("GetDataCountries")]
-        public async Task<IActionResult> GetFile()
+        [Route("GetCountriesStructureData")]
+        public async Task<IActionResult> LoadCountries()
         {
-            using (var client = new HttpClient())
+            try
             {
-                var urlFile = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv";
+                var ListCountries = await _UFContext.GetCountriesStructure();
+                if (ListCountries.Count == 0)
+                    throw new Exception();
 
-                using (var response = await client.GetAsync(urlFile))
-                {
-                    response.EnsureSuccessStatusCode();
-                    var fileContent = await response.Content.ReadAsStringAsync();
-
-                }
-
-                return Ok("File downloaded succesfully");
+                _UFContext.SaveCountriesStructureToDB(ListCountries);
+                return Ok();
             }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            
         }
     }
 }

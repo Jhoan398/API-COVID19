@@ -3,6 +3,7 @@ using System;
 using API_COVID19;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APICOVID19.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230315002309_Create DB")]
+    partial class CreateDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,6 +104,9 @@ namespace APICOVID19.Migrations
 
                     b.Property<decimal>("Deaths")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("FrecuencyTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("FrequencyTypeId")
                         .HasColumnType("integer");
