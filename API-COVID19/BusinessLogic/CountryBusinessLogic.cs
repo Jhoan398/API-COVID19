@@ -23,7 +23,7 @@ namespace API_COVID19.BusinessLogic
 
         public async Task<Country> GetCountryByNameAsync(string CountryName)
         {
-            return _dbContext.Country.Where(t => t.Combined_Key == CountryName).FirstOrDefault();
+            return _dbContext.Country.Where(t => t.Combined_Key.Contains(CountryName)).FirstOrDefault();
         }
 
 
