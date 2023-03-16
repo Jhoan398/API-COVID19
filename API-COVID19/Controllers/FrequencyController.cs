@@ -36,28 +36,5 @@ namespace API_COVID19.Controllers
 
         }
 
-        [HttpGet]
-        [Route("GetDataFrecuency")]
-        public async Task<IActionResult> DataFrecuency() 
-        {
-            try
-            {
-                var FrecuencyData = await _UFContext.FrecuencyByCountry();
-                var FrecuencyList = FrecuencyData.Values.SelectMany(casesList => casesList).ToList();
-
-                _UFContext.SaveFrequencyDataToDB(FrecuencyList);
-              
-                return Ok();
-            }
-            catch (Exception)
-            {
-
-                return BadRequest(string.Empty);
-            }
-            
-
-
-        }
-
     }
 }
