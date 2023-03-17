@@ -1,4 +1,4 @@
-﻿using API_COVID19.BusinessLogic;
+using API_COVID19.BusinessLogic;
 using API_COVID19.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,106 +17,106 @@ namespace API_COVID19.Controllers
             _UFContext = new UpdateFileBusinessLogic(AppDataContext);
         }
 
-        [HttpGet]
-        [Route("GetAllCovidCases")]
-        public async Task<IActionResult> GetDateReportCases() 
-        {
-            try
-            {
-                var startDate = new DateTime(2021, 1, 1);
-                var endDate = new DateTime(2023, 3, 9); ; // Ayer
+        //[HttpGet]
+        //[Route("GetAllCovidCases")]
+        //public async Task<IActionResult> GetDateReportCases() 
+        //{
+        //    try
+        //    {
+        //        var startDate = new DateTime(2021, 1, 1);
+        //        var endDate = new DateTime(2023, 3, 9); ; // Ayer
 
-                var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
-                                                       .Select(day => startDate.AddDays(day))
-                                                       .ToList();
+        //        var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
+        //                                               .Select(day => startDate.AddDays(day))
+        //                                               .ToList();
 
-                var dicCases = new Dictionary<string, List<Cases>>();
-                var WorldWideList = new List<Cases>();
+        //        var dicCases = new Dictionary<string, List<Cases>>();
+        //        var WorldWideList = new List<Cases>();
 
-                foreach (var DateReport in dates)
-                {
-                    var WorldWideCases = await _UFContext.GetWorldWideCases(DateReport);
-                    WorldWideList = WorldWideCases.Values.SelectMany(casesList => casesList).ToList();
-                    dicCases.Add(DateReport.ToString("dd-MM-yyyy"), WorldWideList);
-                }
+        //        foreach (var DateReport in dates)
+        //        {
+        //            var WorldWideCases = await _UFContext.GetWorldWideCases(DateReport);
+        //            WorldWideList = WorldWideCases.Values.SelectMany(casesList => casesList).ToList();
+        //            dicCases.Add(DateReport.ToString("dd-MM-yyyy"), WorldWideList);
+        //        }
 
-                WorldWideList = dicCases.Values.SelectMany(casesList => casesList).ToList();
-                await _UFContext.SaveCountriesCasesToDB(WorldWideList);
-
-
-                return Ok();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        [HttpGet]
-        [Route("CalculateDataFrecuency")]
-        public async Task<IActionResult> DataFrecuency()
-        {
-            try
-            {
-                var FrecuencyData = await _UFContext.FrecuencyByCountry();
-                var FrecuencyList = FrecuencyData.Values.SelectMany(casesList => casesList).ToList();
-
-                _UFContext.SaveFrequencyDataToDB(FrecuencyList);
-
-                return Ok();
-            }
-            catch (Exception)
-            {
-
-                return BadRequest(string.Empty);
-            }
+        //        WorldWideList = dicCases.Values.SelectMany(casesList => casesList).ToList();
+        //        await _UFContext.SaveCountriesCasesToDB(WorldWideList);
 
 
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
 
-        }
+        //        throw;
+        //    }
+        //}
 
-        [HttpGet]
-        [Route("GetDateReportVaccinateds")]
-        public async Task<IActionResult> GetDateReportVaccinateds()
-        {
-            try
-            {
+        //[HttpGet]
+        //[Route("CalculateDataFrecuency")]
+        //public async Task<IActionResult> DataFrecuency()
+        //{
+        //    try
+        //    {
+        //        var FrecuencyData = await _UFContext.FrecuencyByCountry();
+        //        var FrecuencyList = FrecuencyData.Values.SelectMany(casesList => casesList).ToList();
 
-                var Vaccinateds = await _UFContext.GetListVaccinateds();
-                if (!Vaccinateds.Any())
-                    throw new Exception();
+        //        _UFContext.SaveFrequencyDataToDB(FrecuencyList);
+
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        return BadRequest(string.Empty);
+        //    }
 
 
-                await _UFContext.SaveCountriesVaccinatedToDB(Vaccinateds);
 
-                return Ok();
-            }
-            catch (Exception)
-            {
+        //}
 
-                return BadRequest();
-            }
-        }
+        //[HttpGet]
+        //[Route("GetDateReportVaccinateds")]
+        //public async Task<IActionResult> GetDateReportVaccinateds()
+        //{
+        //    try
+        //    {
 
-        [HttpGet]
-        [Route("GetCountriesStructureData")]
-        public async Task<IActionResult> LoadCountries()
-        {
-            try
-            {
-                var ListCountries = await _UFContext.GetCountriesStructure();
-                if (ListCountries.Count == 0)
-                    throw new Exception();
+        //        var Vaccinateds = await _UFContext.GetListVaccinateds();
+        //        if (!Vaccinateds.Any())
+        //            throw new Exception();
 
-                _UFContext.SaveCountriesStructureToDB(ListCountries);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+
+        //        await _UFContext.SaveCountriesVaccinatedToDB(Vaccinateds);
+
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        return BadRequest();
+        //    }
+        //}
+
+        //[HttpGet]
+        //[Route("GetCountriesStructureData")]
+        //public async Task<IActionResult> LoadCountries()
+        //{
+        //    try
+        //    {
+        //        var ListCountries = await _UFContext.GetCountriesStructure();
+        //        if (ListCountries.Count == 0)
+        //            throw new Exception();
+
+        //        _UFContext.SaveCountriesStructureToDB(ListCountries);
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return BadRequest();
+        //    }
             
-        }
+        //}
     }
 }
