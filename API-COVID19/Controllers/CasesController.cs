@@ -29,7 +29,7 @@ namespace API_COVID19.Controllers
             catch (Exception)
             {
 
-                throw;
+                return BadRequest();
             }
 
         }
