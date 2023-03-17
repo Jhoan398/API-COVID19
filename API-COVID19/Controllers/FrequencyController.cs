@@ -1,4 +1,4 @@
-﻿using API_COVID19.BusinessLogic;
+using API_COVID19.BusinessLogic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

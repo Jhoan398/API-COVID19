@@ -1,4 +1,4 @@
-﻿using API_COVID19.Models;
+using API_COVID19.Models;
 
 namespace API_COVID19.BusinessLogic
 {
