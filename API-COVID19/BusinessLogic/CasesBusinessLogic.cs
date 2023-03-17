@@ -14,85 +14,70 @@ namespace API_COVID19.BusinessLogic
         }
 
 
-        public List<Cases> GetCasesByCountryName(string CountryName) 
-        {
-
-            var Country = _dbContext.Country.Where(t => t.Combined_Key == CountryName).FirstOrDefault();
-
-            return _dbContext.Cases.Where(t => t.CountryId == Country.Id).ToList<Cases>();
-
-        }
-
-
-        public async Task<List<Cases>> GetCasesByCountryId(int CountryId)
-        {
-            return _dbContext.Cases.Where(t => t.CountryId == CountryId).ToList<Cases>();
-        }
-
-        public async Task<List<Cases>> GetCasesByCountry_PronvinceName(string CountryName, string PronvinceSName) 
-        {
-            var Country = _dbContext.Country.Include(t => t.ProvinceStates).Where(p => p.Combined_Key == CountryName).FirstOrDefault();
-            var PronvinceState = Country.ProvinceStates.Where(t => t.ProvinceName == PronvinceSName).FirstOrDefault();
-
-
-            return _dbContext.Cases.Where(t => t.ProvinceStateId == PronvinceState.Id).ToList();
-        }
-        public async Task<Cases> GetCasesBeetwenDatesByCountryId(DateTime InitialDate, DateTime FinalDate, int CountryId) 
-        {
-            //MM-dd-YYYY 
-            var sumaCasosEnRango = new Cases
-            {
-                Confirmed = _dbContext.Cases
-                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
-                   .Sum(c => c.Confirmed),
-                Deaths = _dbContext.Cases
-                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
-                   .Sum(c => c.Deaths),
-                Recovered = _dbContext.Cases
-                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
-                   .Sum(c => c.Recovered),
-                CountryId = CountryId
-            };
-
-
-            return sumaCasosEnRango;
-        }
-
-        public async Task<List<Cases>> GetCasesByCountry_PronvinceName(int CountryId, int PronvinceSId)
-        {
-            var Country = _dbContext.Country.Include(t => t.ProvinceStates).Where(p => p.Id == CountryId).FirstOrDefault();
-            var PronvinceState = Country.ProvinceStates.Where(t => t.Id == PronvinceSId).FirstOrDefault();
-
-
-            return _dbContext.Cases.Where(t => t.ProvinceStateId == PronvinceState.Id).ToList();
-        }
-
-        public async Task<List<Cases>> GetCasesByCountry(int CountryId, DateTime InitialDate, DateTime? FinalDate) 
+        private List<Cases> GetCasesByProvinceState(int CountryId, int ProvinceSId, DateTime InitialDate, DateTime? FinalDate) 
         {
             var listCases = new List<Cases>();
             var Case = new Cases();
+            InitialDate = InitialDate.ToUniversalTime();
+            var DataCases = _dbContext.Cases.Where(t => t.CountryId == CountryId && t.ProvinceStateId == ProvinceSId);
 
             if (FinalDate.HasValue)
             {
                 FinalDate = FinalDate.Value.ToUniversalTime();
+                DataCases = DataCases.Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate);
 
                 Case = new Cases
                 {
-                    Confirmed = _dbContext.Cases
-                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
+                    Confirmed = DataCases
                    .Sum(c => c.Confirmed),
-                    Deaths = _dbContext.Cases
-                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
+                    Deaths = DataCases
                    .Sum(c => c.Deaths),
-                    Recovered = _dbContext.Cases
-                   .Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate && c.CountryId == CountryId)
+                    Recovered = DataCases
                    .Sum(c => c.Recovered),
-                    CountryId = CountryId
+                    CountryId = CountryId,
+                    ProvinceStateId = ProvinceSId,
+                    DateReport = InitialDate
                 };
             }
             else 
             {
-                var DataCases = _dbContext.Cases.Where(t => t.CountryId == CountryId && t.DateReport == InitialDate.ToUniversalTime());
+                Case = DataCases.Where(c => c.DateReport == InitialDate).FirstOrDefault();
+            }
+
+
+            listCases.Add(Case);
+
+            return listCases;
+        }
+
+        private List<Cases> GetCasesByCountry(int CountryId, DateTime InitialDate, DateTime? FinalDate) 
+        {
+            var listCases = new List<Cases>();
+            var Case = new Cases();
+            var DataCases = _dbContext.Cases.Where(t => t.CountryId == CountryId);
+            InitialDate = InitialDate.ToUniversalTime();
+
+            if (FinalDate.HasValue)
+            {
+                FinalDate = FinalDate.Value.ToUniversalTime();
+                DataCases = DataCases.Where(c => c.DateReport >= InitialDate && c.DateReport <= FinalDate);
+
+                Case = new Cases
+                {
+                    Confirmed = DataCases
+                   .Sum(c => c.Confirmed),
+                    Deaths = DataCases
+                   .Sum(c => c.Deaths),
+                    Recovered = DataCases
+                   .Sum(c => c.Recovered),
+                    CountryId = CountryId,
+                    DateReport = InitialDate
+                };
+            }
+            else
+            {
+                DataCases = DataCases.Where(t => t.DateReport == InitialDate);
+
                 Case = new Cases
                 {
                     Confirmed = DataCases
@@ -109,6 +94,16 @@ namespace API_COVID19.BusinessLogic
             listCases.Add(Case);
 
             return listCases;
+        }
+
+        public async Task<List<Cases>> GetCasesByConditions(int CountryId, int? ProvinceSId, DateTime InitialDate, DateTime? FinalDate) 
+        {
+
+            if (ProvinceSId.HasValue)
+                return GetCasesByProvinceState(CountryId, ProvinceSId.Value, InitialDate, FinalDate);
+
+            return GetCasesByCountry(CountryId, InitialDate, FinalDate);
+
         }  
 
     }

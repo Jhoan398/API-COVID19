@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("CalculateFrecuency")]
+    [Route("Frequency")]
     public class FrequencyController : Controller
     {
         private readonly FrequencyBusinessLogic _UFContext;
@@ -17,13 +17,30 @@ namespace API_COVID19.Controllers
 
 
         [HttpGet]
-        [Route("FrecuencyByTypeFrecuency")]
-        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrecuency, int countryID, DateTime? Date) 
+        [Route("FrequencyTypes")]
+        public async Task<IActionResult> CountryFrecuencyByTypeFrequency()
+        {
+            try
+            {
+                var TypesFrequency = await _UFContext.FrequencyTypes();
+
+                return Ok(TypesFrequency);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+        }
+
+
+        [HttpGet]
+        [Route("CountryFrecuencyByTypeFrecuency")]
+        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrecuency, int countryID, DateTime Date) 
         {
             try
             {
                 var FecuencyData = await _UFContext.GetFrecuencyByTypeFrecuency(TypeFrecuency, countryID, Date);
-
 
                 return Ok(FecuencyData);
             }
@@ -31,8 +48,6 @@ namespace API_COVID19.Controllers
             {
                 return BadRequest();
             }
-
-
 
         }
 
