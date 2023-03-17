@@ -17,25 +17,57 @@ namespace API_COVID19.Controllers
 
 
         [HttpGet]
-        [Route("GetProvinceStatesByIdCountry")]
-        public async Task<IActionResult> GetProvinceStatesByIdCountry(int UID)
+        [Route("ProvinceStatesByIdCountry")]
+        public async Task<IActionResult> ProvinceStatesByIdCountry(int UID)
         {
-            var type = ResponseType.Succes;
 
             try
             {
-                IEnumerable<ProvinceState> ProvinceStates = _db.GetProvinceStatesFromCountry(UID);
+                var ProvinceStates = await _db.GetProvinceStatesFromCountry(UID);
 
-                if (!ProvinceStates.Any())
-                    type = ResponseType.NotFound;
-
-                return Ok(ResponseHandler.GetAppResponse(type, ProvinceStates));
+                return Ok(ProvinceStates);
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
+
+        }
+
+        [HttpGet]
+        [Route("ProvinceStatesById")]
+        public async Task<IActionResult> ProvinceStatesById(int UID)
+        {
+
+            try
+            {
+                var ProvinceStates = await _db.GetProvinceStatesById(UID);
+
+                return Ok(ProvinceStates);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+        }
+
+        [HttpGet]
+        [Route("GetProvinceStatesByName")]
+        public async Task<IActionResult> GetProvinceStatesByName(string Name)
+        {
+
+            try
+            {
+                var ProvinceStates = await _db.GetProvinceStatesByName(Name);
+
+                return Ok(ProvinceStates);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
         }
 
     }

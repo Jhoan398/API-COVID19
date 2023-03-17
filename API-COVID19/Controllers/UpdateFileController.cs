@@ -53,30 +53,27 @@ namespace API_COVID19.Controllers
             }
         }
 
-
         [HttpGet]
-        [Route("GetDateReportCases")]
-        public async Task<IActionResult> GetDateReportCases(DateTime dateReport)
+        [Route("CalculateDataFrecuency")]
+        public async Task<IActionResult> DataFrecuency()
         {
             try
             {
-                var WorldWideCases = await _UFContext.GetWorldWideCases(dateReport);
-                
-                if (!WorldWideCases.Any())
-                    throw new Exception();
+                var FrecuencyData = await _UFContext.FrecuencyByCountry();
+                var FrecuencyList = FrecuencyData.Values.SelectMany(casesList => casesList).ToList();
 
-                foreach (var Cases in WorldWideCases)
-                {
-                    await _UFContext.SaveCountriesCasesToDB(Cases.Value);
-                }
+                _UFContext.SaveFrequencyDataToDB(FrecuencyList);
 
                 return Ok();
             }
             catch (Exception)
             {
-                return BadRequest();
+
+                return BadRequest(string.Empty);
             }
-            
+
+
+
         }
 
         [HttpGet]

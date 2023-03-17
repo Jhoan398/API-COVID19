@@ -25,46 +25,35 @@ namespace API_COVID19.Controllers
         [Route("GetCountries")]
         public async Task<IActionResult> GetCountriesAsync() 
         {
-            var type = ResponseType.Succes;
 
             try
             {
-                IEnumerable<Country>countries = await _db.GetCountries();
+                var countries = await _db.GetCountries();
 
-                if (!countries.Any())
-                    type = ResponseType.NotFound;
-
-                return Ok(ResponseHandler.GetAppResponse(type, countries));
+                return Ok(countries);
             }
             catch (Exception)
             {
 
-                throw;
+                return BadRequest();
             }
         }
-
-
-
 
         [HttpGet]
         [Route("GetCountriesByName")]
         public async Task<IActionResult> GetCountriesByName(string name)
         {
-            var type = ResponseType.Succes;
 
             try
             {
                 var country = await _db.GetCountryByNameAsync(name);
 
-                if (country == null)
-                    type = ResponseType.NotFound;
-
-                return Ok(ResponseHandler.GetAppResponse(type, country));
+                return Ok(country);
             }
             catch (Exception)
             {
 
-                throw;
+                return BadRequest();
             }
         }
 
@@ -72,21 +61,18 @@ namespace API_COVID19.Controllers
         [Route("GetCountriesById")]
         public async Task<IActionResult> GetCountriesById(int UID)
         {
-            var type = ResponseType.Succes;
+
 
             try
             {
-                var country = _db.GetCountryById(UID);
+                var country = await _db.GetCountryById(UID);
 
-                if (country == null)
-                    type = ResponseType.NotFound;
-
-                return Ok(ResponseHandler.GetAppResponse(type, country));
+                return Ok(country);
             }
             catch (Exception)
             {
 
-                throw;
+                return BadRequest();
             }
         }
 

@@ -16,14 +16,14 @@ namespace API_COVID19.BusinessLogic
             _dbContext= dbContext;  
         }
 
-        public Country GetCountryById(int UID)
+        public async Task<Country> GetCountryById(int UID)
         {
             return _dbContext.Country.Where(t => t.Id == UID).FirstOrDefault();
         }
 
         public async Task<Country> GetCountryByNameAsync(string CountryName)
         {
-            return _dbContext.Country.Where(t => t.Combined_Key == CountryName).FirstOrDefault();
+            return _dbContext.Country.Where(t => t.Combined_Key.Contains(CountryName)).FirstOrDefault();
         }
 
 
