@@ -12,31 +12,37 @@ namespace API_COVID19.BusinessLogic
             _dbContext = dbContext;
         }
 
-        public async Task<List<Frequency>> GetFrecuencyByTypeFrecuency(int TypeFrecuency, int CountryId, DateTime? Date)
+        public async Task<List<FrequencyType>> FrequencyTypesById(int IdType)
+        {
+            return _dbContext.FrequencyType.Where(t => t.Id == IdType).ToList();
+        }
+
+        public async Task<List<FrequencyType>> FrequencyTypes() 
+        {
+            return _dbContext.FrequencyType.ToList();
+        }
+
+        public async Task<List<Frequency>> GetFrecuencyByTypeFrecuency(int TypeFrecuency, int CountryId, DateTime Date)
         {
             var DataFrecuency = _dbContext.Frequency
                                 .Where(t => t.FrequencyTypeId == TypeFrecuency && t.CountryId == CountryId);
 
+            Date = Date.ToUniversalTime();
 
-            if (Date.HasValue) 
+            switch (TypeFrecuency)
             {
-                Date = Date.Value.ToUniversalTime();
+                case 1:
+                    DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date);
+                    break;
+                case 2:
+                    DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Year && t.DateReport.Month == Date.Month);
+                    break;
+                case 3:
+                    DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Year);
+                    break;
 
-                switch (TypeFrecuency)
-                {
-                    case 1:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date.Value);
-                        break;
-                    case 2:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Value.Year && t.DateReport.Month == Date.Value.Month);
-                        break;
-                    case 3:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Value.Year);
-                        break;
-
-                }
             }
-                
+
 
             var ListFrecuency = DataFrecuency.ToList();
 

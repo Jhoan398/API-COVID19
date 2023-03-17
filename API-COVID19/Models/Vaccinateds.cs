@@ -17,7 +17,7 @@ namespace API_COVID19.Models
         public int CountryId { get; set; }
 
         [ForeignKey("CountryId")]
-        public virtual Country CountryCase { get; set; }
+        public virtual Country Country { get; set; }
         
     }
 }
