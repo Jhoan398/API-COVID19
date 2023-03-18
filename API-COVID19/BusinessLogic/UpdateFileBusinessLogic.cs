@@ -20,6 +20,22 @@ namespace API_COVID19.BusinessLogic
             _dbContext = dbContext;
         }
 
+        public async Task SaveWorldMapDataToDB(WorldmapData WorldmapData)
+        {
+            try
+            {
+                _dbContext.WorldmapData.AddRange(WorldmapData);
+                _dbContext.SaveChanges();
+
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+
         public async Task SaveFrequencyDataToDB(List<Frequency> ListFrequency)
         {
             try
@@ -189,6 +205,33 @@ namespace API_COVID19.BusinessLogic
 
             return DicAVGCases;
         }
+
+
+        public async Task<WorldmapData> GetWorldData()
+        {
+            try
+            {
+                var WorldJsonName = "world-110m.json";
+                var filePath = @"C:\Users\USER\Desktop\Universidad\TESIS PROYECTO\Data\" + WorldJsonName;
+ 
+                string jsonContent = File.ReadAllText(filePath);
+
+                var WorldmapData = new WorldmapData
+                {
+                    Description = WorldJsonName,
+                    Data = jsonContent
+                };
+
+                return WorldmapData;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+            
+        }
+
 
         //Permite el mapeo de los datos para los casos de estados unidos
         private List<Cases> GetListCasesCovidUSA(string[] Content, DateTime DateReport)

@@ -18,6 +18,28 @@ namespace API_COVID19.Controllers
         }
 
         //[HttpGet]
+        //[Route("LoadWorldMapData")]
+        //public async Task<IActionResult> DataFrecuency()
+        //{
+        //    try
+        //    {
+        //        var WorldMapData = await _UFContext.GetWorldData();
+
+
+        //        _UFContext.SaveWorldMapDataToDB(WorldMapData);
+        //        //_UFContext.SaveFrequencyDataToDB(FrecuencyList);
+
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        return BadRequest(string.Empty);
+        //    }
+        //}
+
+
+        //[HttpGet]
         //[Route("GetAllCovidCases")]
         //public async Task<IActionResult> GetDateReportCases() 
         //{
@@ -116,7 +138,7 @@ namespace API_COVID19.Controllers
         //    {
         //        return BadRequest();
         //    }
-            
+
         //}
     }
 }
