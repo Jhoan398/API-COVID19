@@ -13,9 +13,9 @@ namespace API_COVID19.BusinessLogic
         }
 
 
-        public WorldmapData GetWorldMapData() 
+        public List<WorldmapData> GetWorldMapData() 
         {
-            return _dbContext.WorldmapData.FirstOrDefault();
+            return _dbContext.WorldmapData.ToList();
         }
     }
 }

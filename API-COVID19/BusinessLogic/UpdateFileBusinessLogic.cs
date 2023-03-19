@@ -211,6 +211,7 @@ namespace API_COVID19.BusinessLogic
         {
             try
             {
+                //var WorldJsonName = "anchors.json";
                 var WorldJsonName = "world-110m.json";
                 var filePath = @"C:\Users\USER\Desktop\Universidad\TESIS PROYECTO\Data\" + WorldJsonName;
  
