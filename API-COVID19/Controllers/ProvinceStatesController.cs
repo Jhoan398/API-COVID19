@@ -6,6 +6,8 @@ using static API_COVID19.Models.ApiResponse;
 
 namespace API_COVID19.Controllers
 {
+    [ApiController]
+    [Route("api/ProvinceStates")]
     public class ProvinceStatesController : Controller
     {
         private readonly ProvinceStateBusinessLogic _db;

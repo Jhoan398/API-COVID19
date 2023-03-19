@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("WorldMap")]
+    [Route("api/WorldMap")]
     public class WorldMapController : Controller
     {
         private readonly WorldMapBussinesLogic _db;

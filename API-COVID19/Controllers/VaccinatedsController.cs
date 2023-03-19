@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("Vaccinateds")]
+    [Route("api/Vaccinateds")]
     public class VaccinatedsController : Controller
     {
         private readonly VaccinatedsBusinessLogic _db;

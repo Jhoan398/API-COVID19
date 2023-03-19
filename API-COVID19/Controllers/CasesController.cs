@@ -6,7 +6,7 @@ using static API_COVID19.Models.ApiResponse;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("Cases")]
+    [Route("api/Cases")]
     public class CasesController : Controller
     {
         private readonly CasesBusinessLogic _db;
