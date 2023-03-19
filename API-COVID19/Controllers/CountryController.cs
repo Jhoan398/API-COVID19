@@ -10,7 +10,7 @@ using static API_COVID19.Models.ApiResponse;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("Country")]
+    [Route("api/Country")]
     public class CountryController : Controller
     {
         private readonly CountryBusinessLogic _db;

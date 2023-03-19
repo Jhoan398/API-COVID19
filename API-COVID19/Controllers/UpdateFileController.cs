@@ -7,7 +7,7 @@ using static API_COVID19.Models.ApiResponse;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("UpdateData")]
+    [Route("api/UpdateData")]
     public class UpdateFileController : Controller
     {
         private readonly UpdateFileBusinessLogic _UFContext;

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API_COVID19.Controllers
 {
     [ApiController]
-    [Route("Frequency")]
+    [Route("api/Frequency")]
     public class FrequencyController : Controller
     {
         private readonly FrequencyBusinessLogic _UFContext;
