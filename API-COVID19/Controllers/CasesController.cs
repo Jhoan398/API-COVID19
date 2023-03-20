@@ -18,13 +18,27 @@ namespace API_COVID19.Controllers
 
         [HttpGet]
         [Route("CountryCasesByConditions")]
-        public async Task<IActionResult> CountryCasesByConditions(int CountryId, int? PronvinceSId ,DateTime InitialDate, DateTime? FinalDate)
+        public async Task<IActionResult> CountryCasesByConditions(int CountryId, int? PronvinceSId , bool IsSumattion, DateTime InitialDate, DateTime FinalDate)
         {
 
             try
             {
-                var Cases = await _db.GetCasesByConditions(CountryId, PronvinceSId, InitialDate, FinalDate);
-                return Ok(Cases);
+                var cases = new List<Cases>();
+                InitialDate = InitialDate.ToUniversalTime();
+                FinalDate = FinalDate.ToUniversalTime();
+
+                if (IsSumattion) 
+                {
+                    cases = await _db.GetSumCasesByConditions(CountryId, PronvinceSId, InitialDate, FinalDate);
+                }
+                else 
+                {
+                    cases = await _db.GetListCasesByConditions(CountryId, PronvinceSId, InitialDate, FinalDate);
+                }
+
+
+
+                return Ok(cases);
             }
             catch (Exception)
             {
