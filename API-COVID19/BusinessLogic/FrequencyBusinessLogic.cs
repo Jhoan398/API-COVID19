@@ -22,27 +22,31 @@ namespace API_COVID19.BusinessLogic
             return _dbContext.FrequencyType.ToList();
         }
 
-        public async Task<List<Frequency>> GetFrecuencyByTypeFrecuency(int TypeFrecuency, int CountryId, DateTime Date)
+        public async Task<List<Frequency>> GetFrecuencyByTypeFrecuency(int TypeFrecuency, int CountryId, DateTime? Date)
         {
             var DataFrecuency = _dbContext.Frequency
                                 .Where(t => t.FrequencyTypeId == TypeFrecuency && t.CountryId == CountryId);
 
-            Date = Date.ToUniversalTime();
-
-            switch (TypeFrecuency)
+            if (Date.HasValue) 
             {
-                case 1:
-                    DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date);
-                    break;
-                case 2:
-                    DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Year && t.DateReport.Month == Date.Month);
-                    break;
-                case 3:
-                    DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Year);
-                    break;
+
+                Date = Date.Value.ToUniversalTime();
+
+                switch (TypeFrecuency)
+                {
+                    case 1:
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date);
+                        break;
+                    case 2:
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Value.Year && t.DateReport.Month == Date.Value.Month);
+                        break;
+                    case 3:
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Value.Year);
+                        break;
+
+                }
 
             }
-
 
             var ListFrecuency = DataFrecuency.ToList();
 
