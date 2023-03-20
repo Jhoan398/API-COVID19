@@ -36,7 +36,7 @@ namespace API_COVID19.Controllers
 
         [HttpGet]
         [Route("CountryFrecuencyByTypeFrecuency")]
-        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrecuency, int countryID, DateTime Date) 
+        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrecuency, int countryID, DateTime? Date) 
         {
             try
             {
