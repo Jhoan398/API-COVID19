@@ -24,8 +24,8 @@ namespace API_COVID19.Controllers
 
             try
             {
-                InitialDate= InitialDate.ToUniversalTime();
-                FinalDate = FinalDate.ToUniversalTime();
+                InitialDate= InitialDate.Date.ToUniversalTime();
+                FinalDate = FinalDate.Date.ToUniversalTime();
                 var Vaccinateds = await _db.GetVaccinatedsByDateReport(CountryId, InitialDate, FinalDate);
                 return Ok(Vaccinateds);
             }
