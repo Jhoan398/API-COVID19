@@ -140,5 +140,24 @@ namespace API_COVID19.Controllers
         //    }
 
         //}
+
+
+        //[HttpGet]
+        //[Route("LoadISOCountries")]
+        //public async Task<IActionResult> LoadISOCountries()
+        //{
+        //    try
+        //    {
+        //        var ListCountries = await _UFContext.LoadISO3();
+        //        _UFContext.SaveISOStructureToDB(ListCountries);
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //}
+
     }
 }

@@ -51,6 +51,21 @@ namespace API_COVID19.BusinessLogic
             }
         }
 
+        public async void SaveISOStructureToDB(List<Country> countries)
+        {
+
+            try
+            {
+                _dbContext.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
         public async void SaveCountriesStructureToDB(List<Country> countries)
         {
 
@@ -400,6 +415,34 @@ namespace API_COVID19.BusinessLogic
 
         }
 
+
+        public async Task<List<Country>> LoadISO3()
+        {
+            var urlFile = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv";
+            var ListCountries = _dbContext.Country.ToList();
+            string[] lines = await GetStringCsvFile(urlFile);
+
+            foreach (var line in lines.Skip(1))
+            {
+                var values = line.Split(',');
+
+                if (string.IsNullOrEmpty(values[0]))
+                    break;
+
+                var UID = int.Parse(values[0]);
+
+                var iso3 = string.IsNullOrEmpty(values[2]) ? "" : values[2];
+
+                var Country = ListCountries.Where(t => t.Id == UID).FirstOrDefault();
+
+                if (Country != null)
+                {
+                    Country.ISO3 = iso3;
+                }
+            }
+
+            return ListCountries;
+        }
 
         // Permite la inserción de los paises y departamentos('Estados')
         public async Task<List<Country>> GetCountriesStructure()
