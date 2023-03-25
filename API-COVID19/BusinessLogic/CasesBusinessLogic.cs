@@ -87,7 +87,16 @@ namespace API_COVID19.BusinessLogic
         private List<Cases> GetListCasesByCountry(int CountryId, DateTime InitialDate, DateTime FinalDate) 
         {
 
-            return _dbContext.Cases.Where(c => c.CountryId == CountryId && c.DateReport.Date >= InitialDate && c.DateReport.Date <= FinalDate).OrderBy(t => t.DateReport).ToList();
+            return _dbContext.Cases.Where(c => c.CountryId == CountryId && c.DateReport.Date >= InitialDate && c.DateReport.Date <= FinalDate).OrderBy(t => t.DateReport).Select(t => new Cases
+            {
+                Id = t.Id,
+                CountryId = t.CountryId,
+                DateReport = t.DateReport,
+                Confirmed = t.Confirmed,
+                Recovered = t.Recovered,
+                Deaths = t.Deaths
+            
+            }).ToList();
 
         }
 

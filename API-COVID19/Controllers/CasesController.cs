@@ -42,10 +42,10 @@ namespace API_COVID19.Controllers
 
                 return Ok(cases);
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
-                return BadRequest();
+                return BadRequest(e);
             }
 
         }
