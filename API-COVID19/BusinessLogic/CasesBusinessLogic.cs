@@ -17,8 +17,7 @@ namespace API_COVID19.BusinessLogic
         private List<Cases> GetSumCasesByProvinceState(int CountryId, int ProvinceSId, DateTime InitialDate, DateTime FinalDate) 
         {
             List<Cases> cases = new List<Cases>();  
-            InitialDate = InitialDate.ToUniversalTime();
-            var DataCases = _dbContext.Cases.Where(t => t.CountryId == CountryId && t.ProvinceStateId == ProvinceSId && t.DateReport >= InitialDate && t.DateReport <= FinalDate);
+            var DataCases = _dbContext.Cases.Where(t => t.CountryId == CountryId && t.ProvinceStateId == ProvinceSId && t.DateReport.Date >= InitialDate && t.DateReport.Date <= FinalDate);
 
             var Case = new Cases
             {
@@ -44,7 +43,7 @@ namespace API_COVID19.BusinessLogic
             List<Cases> cases = new List<Cases>();
             var Case = new Cases();
 
-            var DataCases = _dbContext.Cases.Where(c => c.CountryId == CountryId && c.DateReport >= InitialDate && c.DateReport <= FinalDate);
+            var DataCases = _dbContext.Cases.Where(c => c.CountryId == CountryId && c.DateReport.Date >= InitialDate && c.DateReport.Date <= FinalDate);
 
             Case = new Cases
             {
@@ -88,13 +87,13 @@ namespace API_COVID19.BusinessLogic
         private List<Cases> GetListCasesByCountry(int CountryId, DateTime InitialDate, DateTime FinalDate) 
         {
 
-            return _dbContext.Cases.Where(c => c.CountryId == CountryId && c.DateReport >= InitialDate && c.DateReport <= FinalDate).ToList();
+            return _dbContext.Cases.Where(c => c.CountryId == CountryId && c.DateReport.Date >= InitialDate && c.DateReport.Date <= FinalDate).ToList();
 
         }
 
         private List<Cases> GetListCasesByProvinceState(int CountryId, int ProvinceStateId,DateTime InitialDate, DateTime FinalDate)
         {
-            return _dbContext.Cases.Where(t => t.CountryId == CountryId && t.ProvinceStateId == ProvinceStateId && t.DateReport >= InitialDate && t.DateReport <= FinalDate).ToList(); 
+            return _dbContext.Cases.Where(t => t.CountryId == CountryId && t.ProvinceStateId == ProvinceStateId && t.DateReport.Date >= InitialDate && t.DateReport.Date <= FinalDate).OrderBy(t => t.DateReport).ToList(); 
 
         }
 
