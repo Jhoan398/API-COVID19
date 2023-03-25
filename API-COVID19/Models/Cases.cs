@@ -14,7 +14,7 @@ namespace API_COVID19.Models
         public decimal Confirmed { get; set; }
         public decimal Recovered { get; set; }
         public int CountryId { get; set; }
-        public int? ProvinceStateId { get; set; }
+        public int? ProvinceStateId { get; set; } = null;
 
         public DateTime DateReport { get; set; }
         
