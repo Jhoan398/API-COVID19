@@ -14,7 +14,7 @@ namespace API_COVID19.BusinessLogic
         public async Task<List<Vaccinateds>> GetVaccinatedsByDateReport(int CountryId, DateTime InitialDate, DateTime FinalDate)
         {
 
-            return _dbContext.Vaccinateds.Where(t => t.CountryId == CountryId && t.DateReport >= InitialDate && t.DateReport <= FinalDate).OrderBy(t => t.DateReport).ToList();
+            return _dbContext.Vaccinateds.Where(t => t.CountryId == CountryId && t.DateReport.Date >= InitialDate && t.DateReport.Date <= FinalDate).OrderBy(t => t.DateReport).ToList();
 
         }
 
