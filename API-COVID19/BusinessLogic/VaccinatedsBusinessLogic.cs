@@ -11,11 +11,11 @@ namespace API_COVID19.BusinessLogic
             _dbContext = dbContext;
         }
 
-        public async Task<Vaccinateds> GetVaccinatedsByDateReport(int CountryId, DateTime InitialDate) 
+        public async Task<List<Vaccinateds>> GetVaccinatedsByDateReport(int CountryId, DateTime InitialDate, DateTime FinalDate)
         {
 
-            return _dbContext.Vaccinateds.Where(t => t.CountryId == CountryId && t.DateReport == InitialDate.ToUniversalTime()).FirstOrDefault();
-            
+            return _dbContext.Vaccinateds.Where(t => t.CountryId == CountryId && t.DateReport >= InitialDate && t.DateReport <= FinalDate).ToList();
+
         }
 
 

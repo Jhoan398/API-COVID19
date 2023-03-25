@@ -19,12 +19,14 @@ namespace API_COVID19.Controllers
 
         [HttpGet]
         [Route("CountryVaccinatedsByDateReport")]
-        public async Task<IActionResult> CountryVaccinatedsByDateReport(int CountryId, DateTime InitialDate)
+        public async Task<IActionResult> CountryVaccinatedsByDateReport(int CountryId, DateTime InitialDate, DateTime FinalDate)
         {
 
             try
             {
-                var Vaccinateds = await _db.GetVaccinatedsByDateReport(CountryId, InitialDate);
+                InitialDate= InitialDate.ToUniversalTime();
+                FinalDate = FinalDate.ToUniversalTime();
+                var Vaccinateds = await _db.GetVaccinatedsByDateReport(CountryId, InitialDate, FinalDate);
                 return Ok(Vaccinateds);
             }
             catch (Exception)
