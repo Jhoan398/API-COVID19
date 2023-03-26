@@ -35,13 +35,13 @@ namespace API_COVID19.BusinessLogic
                 switch (TypeFrecuency)
                 {
                     case 1:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date == Date);
                         break;
                     case 2:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Value.Year && t.DateReport.Month == Date.Value.Month);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == Date.Value.Year && t.DateReport.Month == Date.Value.Month);
                         break;
                     case 3:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Year == Date.Value.Year);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == Date.Value.Year);
                         break;
 
                 }
