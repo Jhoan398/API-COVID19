@@ -35,12 +35,12 @@ namespace API_COVID19.Controllers
 
 
         [HttpGet]
-        [Route("CountryFrecuencyByTypeFrecuency")]
-        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrecuency, int countryID, DateTime? Date) 
+        [Route("CountryFrequencyByTypeFrequency")]
+        public async Task<IActionResult> CountryFrecuencyByTypeFrecuency(int TypeFrequency, int countryID, DateTime? Date) 
         {
             try
             {
-                var FecuencyData = await _UFContext.GetFrecuencyByTypeFrecuency(TypeFrecuency, countryID, Date);
+                var FecuencyData = await _UFContext.GetFrecuencyByTypeFrecuency(TypeFrequency, countryID, Date);
 
                 return Ok(FecuencyData);
             }
