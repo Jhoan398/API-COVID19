@@ -49,5 +49,29 @@ namespace API_COVID19.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("CountryCasesByDateReport")]
+        public async Task<IActionResult> CountryCasesByDateReport(DateTime InitialDate)
+        {
+
+            try
+            {
+
+                InitialDate = InitialDate.Date.ToUniversalTime();
+
+                var cases = await _db.GetListCasesByDateReport(InitialDate);
+
+
+                return Ok(cases);
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+
+        }
+
     }
 }

@@ -72,6 +72,21 @@ namespace API_COVID19.BusinessLogic
 
         }
 
+        public async Task<List<Cases>> GetListCasesByDateReport(DateTime InitialDate) 
+        {
+
+            return _dbContext.Cases.Include(t => t.Country).Where(c => c.DateReport == InitialDate).Select(t => new Cases
+            {
+                Id = t.Id,
+                CountryId = t.CountryId,
+                DateReport = t.DateReport,
+                Confirmed = t.Confirmed,
+                Recovered = t.Recovered,
+                Deaths = t.Deaths,       
+                Country = t.Country
+
+            }).ToList();
+        }
 
         public async Task<List<Cases>> GetListCasesByConditions(int CountryId, int? ProvinceSId, DateTime InitialDate, DateTime FinalDate)
         {

@@ -18,7 +18,6 @@ namespace API_COVID19.Models
 
         public DateTime DateReport { get; set; }
         
-        [JsonIgnore]
         [ForeignKey("CountryId")]
         public virtual Country Country { get; set; }
 
