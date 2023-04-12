@@ -30,18 +30,18 @@ namespace API_COVID19.BusinessLogic
             if (Date.HasValue) 
             {
 
-                Date = Date.Value.ToUniversalTime();
+                var newDate = Date.Value.ToUniversalTime();
 
                 switch (TypeFrecuency)
                 {
                     case 1:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport == newDate);
                         break;
                     case 2:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == Date.Value.Year && t.DateReport.Month == Date.Value.Month);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == newDate.Year && t.DateReport.Month == newDate.Month);
                         break;
                     case 3:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == Date.Value.Year);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == newDate.Year);
                         break;
 
                 }
