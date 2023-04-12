@@ -35,7 +35,7 @@ namespace API_COVID19.BusinessLogic
                 switch (TypeFrecuency)
                 {
                     case 1:
-                        DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date == Date);
+                        DataFrecuency = DataFrecuency.Where(t => t.DateReport == Date);
                         break;
                     case 2:
                         DataFrecuency = DataFrecuency.Where(t => t.DateReport.Date.Year == Date.Value.Year && t.DateReport.Month == Date.Value.Month);
@@ -48,7 +48,7 @@ namespace API_COVID19.BusinessLogic
 
             }
 
-            var ListFrecuency = DataFrecuency.ToList();
+            var ListFrecuency = DataFrecuency.OrderBy(t => t.DateReport).ToList();
 
             return ListFrecuency;
         }
